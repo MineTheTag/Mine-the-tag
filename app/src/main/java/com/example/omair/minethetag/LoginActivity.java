@@ -18,7 +18,6 @@ import butterknife.InjectView;
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
     private static final int REQUEST_SIGNUP = 0;
-
     @InjectView(R.id.input_email) EditText _emailText;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
@@ -49,6 +48,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+        Toast.makeText(getApplicationContext(), "Now you can signup", Toast.LENGTH_LONG).show();
+    }
+
     public void login() {
         Log.d(TAG, "Login");
 
@@ -65,6 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog.setMessage("Authenticating...");
         progressDialog.show();
 
+        /* Call new activity */
         String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
@@ -102,7 +108,10 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
-        finish();
+        /* Call maps activity */
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        //finish();
     }
 
     public void onLoginFailed() {

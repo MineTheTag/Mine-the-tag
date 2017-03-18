@@ -1,6 +1,7 @@
 package com.example.omair.minethetag;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -65,7 +66,9 @@ public class SignupActivity extends AppCompatActivity {
         String password = _passwordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
-
+        /* Save data and return to login screen */
+        /* For now just return to login screen */
+        /* Dont remove this code for now */
         new android.os.Handler().postDelayed(
                 new Runnable() {
                     public void run() {
@@ -76,13 +79,18 @@ public class SignupActivity extends AppCompatActivity {
                         progressDialog.dismiss();
                     }
                 }, 3000);
+
     }
 
 
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
-        finish();
+        String signup = "YES";
+        Intent i = new Intent(SignupActivity.this, LoginActivity.class);
+        i.putExtra("FromSignUp", signup);
+        startActivity(i);
+        //finish();
     }
 
     public void onSignupFailed() {
