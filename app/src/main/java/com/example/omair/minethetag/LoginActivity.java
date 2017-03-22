@@ -1,7 +1,9 @@
 package com.example.omair.minethetag;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -28,7 +31,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
-
         _loginButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -51,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        Toast.makeText(getApplicationContext(), "Now you can signup", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Now you can signup", Toast.LENGTH_LONG).show();
     }
 
     public void login() {
