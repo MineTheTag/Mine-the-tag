@@ -2,16 +2,19 @@ package com.example.omair.minethetag;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,12 +30,21 @@ import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapController;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 001;
+    GPSTracker gpsTracker = new GPSTracker(this);
+    double LastKnownLatitude;
+    double LastKnownLongitud;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,8 +91,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-/*
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -95,7 +105,39 @@ public class MainActivity extends AppCompatActivity
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_main);
 
-        MapView map = (MapView) findViewById(R.id.map);
+        // Map integration
+        MapView mapView;
+        MapController mapController;
+        ArrayList<OverlayItem> overlayItemArray;
+
+        mapView = (MapView) this.findViewById(R.id.map);
+        mapView.setBuiltInZoomControls(true);
+        mapView.setMultiTouchControls(true);
+        mapController = (MapController) mapView.getController();
+        mapController.setZoom(20);
+        GeoPoint startPoint = new GeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+        mapController.setCenter(startPoint);
+
+        // Create an ArrayList with overlays to display objects on map
+        overlayItemArray = new ArrayList<OverlayItem>();
+
+        // Create som init objects
+
+        OverlayItem linkopingItem = new OverlayItem("fib-upc", "Spain",
+                new GeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude()));
+
+        // Add the init objects to the ArrayList overlayItemArray
+        overlayItemArray.add(linkopingItem);
+
+        // Add the Array to the IconOverlay
+        ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+
+        // Add the overlay to the MapView
+        mapView.getOverlays().add(itemizedIconOverlay);
+
+
+
+        /*MapView map = (MapView) findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
         //map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
@@ -136,7 +178,11 @@ public class MainActivity extends AppCompatActivity
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     /* Display current user position*/
-                    Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
+                        gpsTracker.getLocation();
+                        gpsTracker.updateGPSCoordinates();
+                        LastKnownLatitude = gpsTracker.getLatitude();
+                        LastKnownLongitud = gpsTracker.getLongitude();
+                        Toast.makeText(getApplicationContext(), Double.toString(LastKnownLatitude), Toast.LENGTH_LONG).show();
                 } else {
                     /* Explain to the user why we need location permission */
                     // permission denied, boo! Disable the

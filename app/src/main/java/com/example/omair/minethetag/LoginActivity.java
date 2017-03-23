@@ -2,6 +2,7 @@ package com.example.omair.minethetag;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -48,6 +49,10 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.mario);
+        mediaPlayer.setLooping(true); // Set looping
+        mediaPlayer.setVolume(100,100);
+        mediaPlayer.start();
     }
 
     @Override
