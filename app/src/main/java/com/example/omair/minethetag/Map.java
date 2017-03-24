@@ -22,7 +22,7 @@ public class Map extends MainActivity {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.map);
 
-        mapView = (MapView) this.findViewById(R.id.map);
+        mapView = (MapView) this.findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
         mapController = (MapController) mapView.getController();
