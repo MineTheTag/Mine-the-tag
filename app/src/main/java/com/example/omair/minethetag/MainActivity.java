@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -37,14 +38,19 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 001;
-    GPSTracker gpsTracker = new GPSTracker(this);
-    double LastKnownLatitude;
-    double LastKnownLongitud;
-
+    private static final String[] INITIAL_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION,
+    };
+    private static final String[] LOCATION_PERMS={
+            Manifest.permission.ACCESS_FINE_LOCATION
+    };
+    private static final int INITIAL_REQUEST=1337;
+    private static final int LOCATION_REQUEST=INITIAL_REQUEST+1;
+    double lat, lon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,9 +73,11 @@ public class MainActivity extends AppCompatActivity
                 // sees the explanation, try again to request the permission.
 
             } else {
-                ActivityCompat.requestPermissions(this,
+
+
+                /*ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);*/
             }
         }
 
@@ -115,7 +123,11 @@ public class MainActivity extends AppCompatActivity
         mapView.setMultiTouchControls(true);
         mapController = (MapController) mapView.getController();
         mapController.setZoom(20);
-        GeoPoint startPoint = new GeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude());
+        //GeoPoint startPoint = new GeoPoint(41.3894841, 2.1133859000000257);
+        //GeoPoint startPoint = new GeoPoint(a[0], a[1]);
+        requestPermissions(LOCATION_PERMS, LOCATION_REQUEST);
+
+        GeoPoint startPoint = new GeoPoint(lat, lon);
         mapController.setCenter(startPoint);
 
         // Create an ArrayList with overlays to display objects on map
@@ -124,7 +136,7 @@ public class MainActivity extends AppCompatActivity
         // Create som init objects
 
         OverlayItem linkopingItem = new OverlayItem("fib-upc", "Spain",
-                new GeoPoint(gpsTracker.getLatitude(), gpsTracker.getLongitude()));
+                new GeoPoint(41.3894841, 2.1133859000000257));
 
         // Add the init objects to the ArrayList overlayItemArray
         overlayItemArray.add(linkopingItem);
@@ -168,26 +180,65 @@ public class MainActivity extends AppCompatActivity
         // Register the listener with the Location Manager to receive location updates
     }
 
+    private void _getLocation() {
+        // Get the location manager
+        LocationManager locationManager = (LocationManager)
+                getSystemService(LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        String bestProvider = locationManager.getBestProvider(criteria, false);
+        Location location = locationManager.getLastKnownLocation(bestProvider);
+        Toast.makeText(getApplication(), "BEST: " + bestProvider, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplication(), "OK", Toast.LENGTH_SHORT).show();
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getApplication(), "FINE", Toast.LENGTH_SHORT).show();
+            location = locationManager.getLastKnownLocation(bestProvider);
+        }
+        try {
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+            Toast.makeText(getApplicationContext(), "Lat = " + Double.toString(lat), Toast.LENGTH_LONG).show();
+        } catch (NullPointerException e) {
+            Toast.makeText(getApplication(), "NOOOO", Toast.LENGTH_LONG).show();
+            lat = -1.0;
+            lon = -1.0;
+        }
+    }
+
+    private double[] getGPS() {
+        LocationManager lm = (LocationManager) getSystemService(
+                Context.LOCATION_SERVICE);
+        List<String> providers = lm.getProviders(true);
+
+        Location l = null;
+
+        for (int i=providers.size()-1; i>=0; i--) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                l = lm.getLastKnownLocation(providers.get(i));
+            }
+            if (l != null) break;
+        }
+
+        double[] gps = new double[2];
+        if (l != null) {
+            gps[0] = l.getLatitude();
+            gps[1] = l.getLongitude();
+        }
+
+        return gps;
+    }
+
+
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    /* Display current user position*/
-                        gpsTracker.getLocation();
-                        gpsTracker.updateGPSCoordinates();
-                        LastKnownLatitude = gpsTracker.getLatitude();
-                        LastKnownLongitud = gpsTracker.getLongitude();
-                        Toast.makeText(getApplicationContext(), Double.toString(LastKnownLatitude), Toast.LENGTH_LONG).show();
-                } else {
-                    /* Explain to the user why we need location permission */
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
+            case LOCATION_REQUEST: {
                 return;
             }
 
@@ -195,6 +246,7 @@ public class MainActivity extends AppCompatActivity
             // permissions this app might request
         }
     }
+
 
     @Override
     public void onBackPressed() {
