@@ -2,11 +2,17 @@ package com.example.omair.minethetag;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -64,6 +70,43 @@ public class LoginActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(this,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch(Exception ex) {}
+
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch(Exception ex) {}
+
+        if(!gps_enabled && !network_enabled) {
+            // notify user
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setMessage("GPS and WIFI not enabled");
+            dialog.setPositiveButton("Open settings", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+
+                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+                    wifi.setWifiEnabled(true);
+                    //get gps
+                }
+            });
+            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+            dialog.show();
+        }
     }
 
     @Override
