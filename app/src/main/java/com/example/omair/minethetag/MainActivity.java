@@ -1,10 +1,15 @@
 package com.example.omair.minethetag;
 
+import android.Manifest;
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,22 +19,35 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.OverlayItem;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private int INITIAL = 100;
+    private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        /* Request the necessary permissions */
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -62,6 +80,59 @@ public class MainActivity extends AppCompatActivity
         mapController.setZoom(9);
         GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
         mapController.setCenter(startPoint);
+
+        ArrayList<OverlayItem> overlayItemArray;
+        overlayItemArray = new ArrayList<OverlayItem>();
+
+        // Create som init objects
+        OverlayItem linkopingItem = new OverlayItem("Linkoping", "Sweden",
+                new GeoPoint(58.4109, 15.6216));
+        OverlayItem stockholmItem = new OverlayItem("Stockholm", "Sweden",
+                new GeoPoint(59.3073348, 18.0747967));
+
+        // Add the init objects to the ArrayList overlayItemArray
+        overlayItemArray.add(linkopingItem);
+        overlayItemArray.add(stockholmItem);
+
+        // Add the Array to the IconOverlay
+        ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+
+        // Add the overlay to the MapView
+        map.getOverlays().add(itemizedIconOverlay);
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        String locationProvider = LocationManager.NETWORK_PROVIDER;
+        Toast.makeText(getApplicationContext(), locationProvider, Toast.LENGTH_LONG).show();
+        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        Toast.makeText(getApplicationContext(), Integer.toString(permissionCheck), Toast.LENGTH_LONG).show();
+        //Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+        //Toast.makeText(getApplicationContext(), Double.toString(lastKnownLocation.getAltitude()), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+                    Toast.makeText(getApplicationContext(), Double.toString(lastKnownLocation.getAltitude()), Toast.LENGTH_LONG).show();
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 
     @Override
