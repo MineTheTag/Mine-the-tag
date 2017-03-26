@@ -2,6 +2,7 @@ package com.example.omair.minethetag;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -34,8 +35,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private int INITIAL = 100;
-    private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
+    private static final int INITIAL = 100;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
+
+    LocationManager locationManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,27 +75,28 @@ public class MainActivity extends AppCompatActivity
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_main);
 
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        Toast.makeText(getApplicationContext(), "Latitude : " + loc.getLatitude(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Longitude : " + loc.getLongitude(), Toast.LENGTH_LONG).show();
         MapView map = (MapView) findViewById(R.id.mapview);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
         IMapController mapController = map.getController();
-        mapController.setZoom(9);
-        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944);
+        mapController.setZoom(20);
+        GeoPoint startPoint = new GeoPoint(loc.getLatitude(), loc.getLongitude());
         mapController.setCenter(startPoint);
 
         ArrayList<OverlayItem> overlayItemArray;
         overlayItemArray = new ArrayList<OverlayItem>();
 
         // Create som init objects
-        OverlayItem linkopingItem = new OverlayItem("Linkoping", "Sweden",
-                new GeoPoint(58.4109, 15.6216));
-        OverlayItem stockholmItem = new OverlayItem("Stockholm", "Sweden",
-                new GeoPoint(59.3073348, 18.0747967));
+        OverlayItem linkopingItem = new OverlayItem("Current", "Location",
+                new GeoPoint(loc.getLatitude(), loc.getLongitude()));
 
         // Add the init objects to the ArrayList overlayItemArray
         overlayItemArray.add(linkopingItem);
-        overlayItemArray.add(stockholmItem);
 
         // Add the Array to the IconOverlay
         ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
@@ -100,13 +104,12 @@ public class MainActivity extends AppCompatActivity
         // Add the overlay to the MapView
         map.getOverlays().add(itemizedIconOverlay);
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
         String locationProvider = LocationManager.NETWORK_PROVIDER;
         Toast.makeText(getApplicationContext(), locationProvider, Toast.LENGTH_LONG).show();
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+
         Toast.makeText(getApplicationContext(), Integer.toString(permissionCheck), Toast.LENGTH_LONG).show();
-        //Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-        //Toast.makeText(getApplicationContext(), Double.toString(lastKnownLocation.getAltitude()), Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -117,8 +120,8 @@ public class MainActivity extends AppCompatActivity
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-                    Toast.makeText(getApplicationContext(), Double.toString(lastKnownLocation.getAltitude()), Toast.LENGTH_LONG).show();
+                    int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+                    Toast.makeText(getApplicationContext(), Integer.toString(permissionCheck), Toast.LENGTH_LONG).show();
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
