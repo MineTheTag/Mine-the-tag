@@ -32,6 +32,8 @@ import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
 
+import static com.example.omair.minethetag.LoginActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -67,19 +69,27 @@ public class MainActivity extends AppCompatActivity
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_main);
 
-        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         Toast.makeText(getApplicationContext(), "Latitude : " + loc.getLatitude(), Toast.LENGTH_LONG).show();
         Toast.makeText(getApplicationContext(), "Longitude : " + loc.getLongitude(), Toast.LENGTH_LONG).show();
+
         MapView map = (MapView) findViewById(R.id.mapview);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
+
         IMapController mapController = map.getController();
         mapController.setZoom(20);
-        GeoPoint startPoint = new GeoPoint(loc.getLatitude(), loc.getLongitude());
+        GeoPoint startPoint = new GeoPoint(loc.getAltitude(), loc.getLongitude());
         mapController.setCenter(startPoint);
-
         ArrayList<OverlayItem> overlayItemArray;
         overlayItemArray = new ArrayList<OverlayItem>();
 
@@ -95,13 +105,6 @@ public class MainActivity extends AppCompatActivity
 
         // Add the overlay to the MapView
         map.getOverlays().add(itemizedIconOverlay);
-
-
-        String locationProvider = LocationManager.NETWORK_PROVIDER;
-        Toast.makeText(getApplicationContext(), locationProvider, Toast.LENGTH_LONG).show();
-        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-
-        Toast.makeText(getApplicationContext(), Integer.toString(permissionCheck), Toast.LENGTH_LONG).show();
     }
 
 

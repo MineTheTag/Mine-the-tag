@@ -3,26 +3,20 @@ package com.example.omair.minethetag;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
-import android.media.MediaPlayer;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
@@ -34,9 +28,9 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_login) Button _loginButton;
     @InjectView(R.id.link_signup) TextView _signupLink;
-
     private static final int INITIAL = 100;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
+    public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,54 +53,29 @@ public class LoginActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.mario);
-        mediaPlayer.setLooping(true); // Set looping
-        mediaPlayer.setVolume(100,100);
-        mediaPlayer.start();
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(getApplicationContext(), "A", Toast.LENGTH_SHORT).show();
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            }
+        } else {
 
 
-        // Request Permissions
-        /* Request the necessary permissions */
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-        LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        boolean gps_enabled = false;
-        boolean network_enabled = false;
-        try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        } catch(Exception ex) {}
-
-        try {
-            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        } catch(Exception ex) {}
-
-        if(!gps_enabled && !network_enabled) {
-            // notify user
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-            dialog.setMessage("GPS and WIFI not enabled");
-            dialog.setPositiveButton("Open settings", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
-
-                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                    wifi.setWifiEnabled(true);
-                    //get gps
-                }
-            });
-            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                    // TODO Auto-generated method stub
-
-                }
-            });
-            dialog.show();
         }
+
     }
 
     @Override
@@ -117,10 +86,8 @@ public class LoginActivity extends AppCompatActivity {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
-                    Toast.makeText(getApplicationContext(), Integer.toString(permissionCheck), Toast.LENGTH_LONG).show();
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    Toast.makeText(getApplicationContext(), "YES", Toast.LENGTH_SHORT).show();
+
 
                 } else {
 
