@@ -78,8 +78,6 @@ public class MainActivity extends AppCompatActivity
         }
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        Toast.makeText(getApplicationContext(), "Latitude : " + loc.getLatitude(), Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), "Longitude : " + loc.getLongitude(), Toast.LENGTH_LONG).show();
 
         MapView map = (MapView) findViewById(R.id.mapview);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -88,7 +86,9 @@ public class MainActivity extends AppCompatActivity
 
         IMapController mapController = map.getController();
         mapController.setZoom(20);
-        GeoPoint startPoint = new GeoPoint(loc.getAltitude(), loc.getLongitude());
+        GeoPoint startPoint = new GeoPoint(loc.getLatitude(), loc.getLongitude());
+        Toast.makeText(getApplicationContext(), "Latitude : " + startPoint.getLatitude(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Longitude : " + startPoint.getLongitude(), Toast.LENGTH_LONG).show();
         mapController.setCenter(startPoint);
         ArrayList<OverlayItem> overlayItemArray;
         overlayItemArray = new ArrayList<OverlayItem>();
