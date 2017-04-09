@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
@@ -114,7 +115,15 @@ public class MainActivity extends AppCompatActivity
         map.setMultiTouchControls(true);
         map.getOverlays().add(mRotationGestureOverlay);
 
+        ImageButton goto_location = new ImageButton(this);
+        goto_location.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
 
+            }
+        });
     }
 
 
