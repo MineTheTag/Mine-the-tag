@@ -25,6 +25,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
+    compile 'io.nlopez.smartlocation:library:3.3.1'
+    compile 'com.github.quentin7b:android-location-tracker:3.2'
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.1'

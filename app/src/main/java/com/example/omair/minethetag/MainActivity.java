@@ -23,6 +23,9 @@ import android.view.MenuItem;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.android.gms.location.DetectedActivity;
+import com.google.android.gms.location.Geofence;
+
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -36,7 +39,16 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 
+import fr.quentinklein.slt.LocationTracker;
+import fr.quentinklein.slt.TrackerSettings;
+import io.nlopez.smartlocation.OnActivityUpdatedListener;
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.geofencing.model.GeofenceModel;
+
 import static com.example.omair.minethetag.LoginActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.omair.minethetag.LoginActivity.latitude;
+import static com.example.omair.minethetag.LoginActivity.longitude;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -80,8 +92,56 @@ public class MainActivity extends AppCompatActivity
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+        TrackerSettings settings =
+                new TrackerSettings()
+                        .setUseGPS(true)
+                        .setUseNetwork(true)
+                        .setUsePassive(true)
+                        .setTimeBetweenUpdates(30 * 1000)
+                        .setMetersBetweenUpdates(5);
+
+        LocationTracker tracker = new LocationTracker(getApplicationContext(), settings) {
+
+            @Override
+            public void onLocationFound(Location location) {
+                Toast.makeText(getApplicationContext(), "Latitude - " + location.getLatitude(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onTimeout() {
+
+            }
+        };
+        //tracker.startListening();
+
+        if (SmartLocation.with(getApplicationContext()).location().state().locationServicesEnabled())
+        {
+            Toast.makeText(getApplicationContext(), "ENABLED", Toast.LENGTH_SHORT).show();
+        }
+        else if (SmartLocation.with(getApplicationContext()).location().state().isAnyProviderAvailable())
+        {
+            Toast.makeText(getApplicationContext(), "Providers", Toast.LENGTH_SHORT).show();
+        }
+
+        SmartLocation.with(getApplicationContext()).activityRecognition()
+                .start(new OnActivityUpdatedListener() {
+
+                    @Override
+                    public void onActivityUpdated(DetectedActivity a)
+                    {
+                        Toast.makeText(getApplicationContext(), "Activity", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        GeofenceModel mestalla = new GeofenceModel.Builder("id_mestalla")
+                .setTransition(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setLatitude(39.47453120000001)
+                .setLongitude(-0.358065799999963)
+                .setRadius(500)
+                .build();
+
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        //Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
         MapView map = (MapView) findViewById(R.id.mapview);
         map.setTileSource(TileSourceFactory.MAPNIK);
@@ -89,17 +149,17 @@ public class MainActivity extends AppCompatActivity
         map.setMultiTouchControls(true);
 
         IMapController mapController = map.getController();
-        mapController.setZoom(20);
-        GeoPoint startPoint = new GeoPoint(loc.getLatitude(), loc.getLongitude());
-        Toast.makeText(getApplicationContext(), "Latitude : " + startPoint.getLatitude(), Toast.LENGTH_LONG).show();
-        Toast.makeText(getApplicationContext(), "Longitude : " + startPoint.getLongitude(), Toast.LENGTH_LONG).show();
+        mapController.setZoom(5);
+        Toast.makeText(getApplicationContext(), "Latitude * " + latitude, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Longitude * " + longitude, Toast.LENGTH_SHORT).show();
+        GeoPoint startPoint = new GeoPoint(latitude, longitude);
         mapController.setCenter(startPoint);
         ArrayList<OverlayItem> overlayItemArray;
         overlayItemArray = new ArrayList<OverlayItem>();
 
         // Create som init objects
         OverlayItem linkopingItem = new OverlayItem("Current", "Location",
-                new GeoPoint(loc.getLatitude(), loc.getLongitude()));
+                new GeoPoint(latitude, longitude));
 
         // Add the init objects to the ArrayList overlayItemArray
         overlayItemArray.add(linkopingItem);

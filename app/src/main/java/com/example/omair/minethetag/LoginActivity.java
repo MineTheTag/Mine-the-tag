@@ -3,6 +3,7 @@ package com.example.omair.minethetag;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -16,6 +17,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import fr.quentinklein.slt.LocationTracker;
+import fr.quentinklein.slt.TrackerSettings;
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -26,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     @InjectView(R.id.link_signup) TextView _signupLink;
     private static final int INITIAL = 100;
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
+    public static double latitude, longitude;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,11 +73,20 @@ public class LoginActivity extends AppCompatActivity {
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
             }
-        } else {
-
-
         }
 
+        SmartLocation.with(getApplicationContext()).location()
+                .start(new OnLocationUpdatedListener() {
+
+                    @Override
+                    public void onLocationUpdated(Location location)
+                    {
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        Toast.makeText(getApplicationContext(), "Latitude > " + latitude, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Longitude > " + longitude, Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
