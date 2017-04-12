@@ -3,6 +3,7 @@ package com.example.omair.minethetag;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -62,15 +63,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -129,43 +121,29 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onActivityUpdated(DetectedActivity a)
                     {
-                        Toast.makeText(getApplicationContext(), "Activity", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Latitude : " + latitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Longitude : " + longitude, Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        GeofenceModel mestalla = new GeofenceModel.Builder("id_mestalla")
-                .setTransition(Geofence.GEOFENCE_TRANSITION_ENTER)
-                .setLatitude(39.47453120000001)
-                .setLongitude(-0.358065799999963)
-                .setRadius(500)
-                .build();
-
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        //Location loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-        MapView map = (MapView) findViewById(R.id.mapview);
+        final MapView map = (MapView) findViewById(R.id.mapview);
         map.setTileSource(TileSourceFactory.MAPNIK);
         //map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
 
         IMapController mapController = map.getController();
-        mapController.setZoom(5);
-        Toast.makeText(getApplicationContext(), "Latitude * " + latitude, Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(), "Longitude * " + longitude, Toast.LENGTH_SHORT).show();
+        mapController.setZoom(20);
         GeoPoint startPoint = new GeoPoint(latitude, longitude);
         mapController.setCenter(startPoint);
+
         ArrayList<OverlayItem> overlayItemArray;
         overlayItemArray = new ArrayList<OverlayItem>();
+        OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
+        Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
+        linkopingItem.setMarker(newMarker);
 
-        // Create som init objects
-        OverlayItem linkopingItem = new OverlayItem("Current", "Location",
-                new GeoPoint(latitude, longitude));
-
-        // Add the init objects to the ArrayList overlayItemArray
         overlayItemArray.add(linkopingItem);
-
-        // Add the Array to the IconOverlay
-        ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
 
         // Add the overlay to the MapView
         map.getOverlays().add(itemizedIconOverlay);
@@ -175,12 +153,19 @@ public class MainActivity extends AppCompatActivity
         map.setMultiTouchControls(true);
         map.getOverlays().add(mRotationGestureOverlay);
 
-        ImageButton goto_location = new ImageButton(this);
-        goto_location.setOnClickListener(new View.OnClickListener()
-        {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.mina);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                // TODO Auto-generated method stub
+            public void onClick(View view) {
+                ArrayList<OverlayItem> overlayItemArray;
+                overlayItemArray = new ArrayList<OverlayItem>();
+                OverlayItem mina = new OverlayItem("Current", "Location", new GeoPoint(0.0, 0.0));
+                Drawable newMarker = getResources().getDrawable(R.drawable.mina);
+                mina.setMarker(newMarker);
+                overlayItemArray.add(mina);
+                map.getOverlays().add(itemizedIconOverlay);
+
 
             }
         });
