@@ -33,6 +33,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.ItemizedOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -141,7 +142,6 @@ public class MainActivity extends AppCompatActivity
         OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
         Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
         linkopingItem.setMarker(newMarker);
-
         overlayItemArray.add(linkopingItem);
         final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
 
@@ -152,21 +152,22 @@ public class MainActivity extends AppCompatActivity
         mRotationGestureOverlay.setEnabled(true);
         map.setMultiTouchControls(true);
         map.getOverlays().add(mRotationGestureOverlay);
+        map.setBuiltInZoomControls(true);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.mina);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<OverlayItem> overlayItemArray;
-                overlayItemArray = new ArrayList<OverlayItem>();
-                OverlayItem mina = new OverlayItem("Current", "Location", new GeoPoint(0.0, 0.0));
-                Drawable newMarker = getResources().getDrawable(R.drawable.mina);
+                ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+                OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(latitude, longitude));//marker
+                Drawable newMarker = getResources().getDrawable(R.drawable.mine28);
                 mina.setMarker(newMarker);
                 overlayItemArray.add(mina);
-                map.getOverlays().add(itemizedIconOverlay);
 
-
+                MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                map.getOverlays().add(overlay);
+                map.invalidate();
             }
         });
     }
