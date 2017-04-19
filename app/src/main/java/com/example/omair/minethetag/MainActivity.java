@@ -57,9 +57,12 @@ public class MainActivity extends AppCompatActivity
 
 
     LocationManager locationManager;
-    double posMinaX, posMinaY;
     int pos = 1;
     double radi = 0.00019;
+    double posMinaX = latitude;
+    double posMinaY = longitude;
+    int TotalMines = 5;
+    int inicialMines = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,8 +129,6 @@ public class MainActivity extends AppCompatActivity
                     public void onActivityUpdated(DetectedActivity a)
                     {
                         Toast.makeText(getApplicationContext(), "Latitude : " + latitude, Toast.LENGTH_SHORT).show();
-                        posMinaX = latitude;
-                        posMinaY = longitude;
                     }
                 });
 
@@ -163,64 +164,58 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
-                OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posMinaX, posMinaY));//marker
-                Drawable newMarker = getResources().getDrawable(R.drawable.mine28);
-                mina.setMarker(newMarker);
-                overlayItemArray.add(mina);
-                if (pos == 1)
+                if (inicialMines <= TotalMines)
                 {
-                    posMinaX = posMinaX + radi;
-                    //posMinaY = posMinaY + radi;
-                    pos = 2;
-                    Toast.makeText(getApplicationContext(),"POS=1", Toast.LENGTH_SHORT).show();
+                    ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+                    double posX = 0, posY = 0;
+                    if (pos == 1)
+                    {
+                        posX = posMinaX + radi;
+                        posY = posMinaY;
+                        pos = 2;
+                    }
+                    else if (pos == 2)
+                    {
+                        posX = posMinaX;
+                        posY = posMinaY - radi;
+                        pos = 3;
+                    }
+                    else if (pos == 3)
+                    {
+                        posX = posMinaX - radi;
+                        posY = posMinaY;
+                        pos = 4;
+                    }
+                    else if (pos == 4)
+                    {
+                        posX = posMinaX;
+                        posY = posMinaY + radi;
+                        pos = 5;
+                    }
+                    else if (pos == 5)
+                    {
+                        posX = posMinaX + radi;
+                        posY = posMinaY + radi;
+                        pos = 1;
+                    }
+
+                    OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
+                    Drawable newMarker = getResources().getDrawable(R.drawable.mine28);
+                    mina.setMarker(newMarker);
+                    overlayItemArray.add(mina);
+
+                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                    map.getOverlays().add(overlay);
+                    map.invalidate();
+                    ++inicialMines;
                 }
-                else if (pos == 2)
+                else
                 {
-                    //posMinaX = posMinaX + radi;
-                    posMinaY = posMinaY - radi;
-                    pos = 3;
-                    Toast.makeText(getApplicationContext(),"POS=2", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "You cannot insert more mines!", Toast.LENGTH_SHORT).show();
                 }
-                else if (pos == 3)
-                {
-                    posMinaX = posMinaX - radi;
-                    posMinaY = posMinaY - radi;
-                    pos = 4;
-                    Toast.makeText(getApplicationContext(),"POS=3", Toast.LENGTH_SHORT).show();
-                }
-                else if (pos == 4)
-                {
-                    posMinaX = posMinaX - radi;
-                    //posMinaY = posMinaY - radi;
-                    pos = 5;
-                    Toast.makeText(getApplicationContext(),"POS=4", Toast.LENGTH_SHORT).show();
-                }
-                else if (pos == 5)
-                {
-                    posMinaX = posMinaX - radi;
-                    posMinaY = posMinaY + radi;
-                    pos = 6;
-                    Toast.makeText(getApplicationContext(),"POS=5", Toast.LENGTH_SHORT).show();
-                }
-                else if (pos == 6)
-                {
-                    posMinaY = posMinaY - radi;
-                    pos = 7;
-                    Toast.makeText(getApplicationContext(),"POS=6", Toast.LENGTH_SHORT).show();
-                }
-                else if (pos == 7)
-                {
-                    posMinaX = posMinaX + radi;
-                    posMinaY = posMinaY - radi;
-                    pos = 1;
-                    Toast.makeText(getApplicationContext(),"POS=8", Toast.LENGTH_SHORT).show();
-                }
-                MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                map.getOverlays().add(overlay);
-                map.invalidate();
             }
         });
+
     }
 
 

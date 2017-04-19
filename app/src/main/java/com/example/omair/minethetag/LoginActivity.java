@@ -1,10 +1,18 @@
 package com.example.omair.minethetag;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +53,53 @@ public class LoginActivity extends AppCompatActivity {
                 login();
             }
         });
+
+        // Check if wifi is active
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        int active = 0;
+        if (!mWifi.isConnected()) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setMessage("We need to activate wifi.");
+            alertDialog.setPositiveButton("Continue",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            // Activity transfer to wifi settings
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    });
+            alertDialog.show();
+            active = 1;
+        }
+
+        // Check if gps is active
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+        if (!manager.isProviderEnabled( LocationManager.GPS_PROVIDER )) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder
+                    .setMessage("We need to activate GPS.")
+                    .setCancelable(false)
+                    .setPositiveButton("Enable GPS",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                    startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            });
+
+            alertDialogBuilder.show();
+            active = 2;
+        }
+
+        if (active == 1)
+        {
+            Toast.makeText(getApplicationContext(), "Wifi activated", Toast.LENGTH_SHORT).show();
+        }
+        else if (active == 2)
+        {
+            Toast.makeText(getApplicationContext(), "Wifi and GPS activated", Toast.LENGTH_SHORT).show();
+        }
 
         _signupLink.setOnClickListener(new View.OnClickListener() {
 
