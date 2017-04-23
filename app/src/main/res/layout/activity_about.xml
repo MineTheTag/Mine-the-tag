@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_about"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.omair.minethetag.MainActivity">
+
+    <TextView
+        android:text="MovieDB is an Android application created by Omair Iqbal and Eduardo Benito, students at BarcelonaTech, Polytechnic University of Catalonia. \nThis application was developed in a project of a subject of the faculty: Interaction and Interface Design."
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="25dp"
+        android:paddingRight="25dp"
+        android:paddingTop="16dp"
+        android:id="@+id/textView2"
+        android:layout_alignParentStart="true" />
+</RelativeLayout>

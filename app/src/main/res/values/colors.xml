@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_darker">#CC1D1D</color>
 
     <color name="black">#000000</color>
     <color name="jet">#222222</color>
@@ -12,13 +11,16 @@
     <color name="iron">#CCCCCC</color>
     <color name="white">#FFFFFF</color>
 
-    <color name="primary">#2196F3</color>
-    <color name="primary_dark">#1976D2</color>
-    <color name="primary_light">#BBDEFB</color>
-    <color name="accent">#009688</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#757575</color>
-    <color name="icons">#FFFFFF</color>
-    <color name="divider">#BDBDBD</color>
+    <color name="primary">#062E6E</color>
+    <color name="primary_dark">#062E6E</color>
+    <color name="primary_darker">#052251</color>
+    <color name="colorAccent">#0A4BB1</color>
+    <color name="year">#999999</color>
+    <color name="title">#222222</color>
+    <color name="newElement">#B71C1C</color>
+    <color name="okElement">#388E3C</color>
+    <color name="deleteElement">#B71C1C</color>
+    <color name="accent">#B71C1C</color>
+
 
 </resources>

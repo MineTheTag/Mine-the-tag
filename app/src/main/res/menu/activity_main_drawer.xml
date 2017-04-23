@@ -1,36 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bwq="http://schemas.android.com/tools">
 
-    <group android:checkableBehavior="single">
+<group android:checkableBehavior="single"></group>
+
+<item android:title="">
+    <menu >
         <item
             android:id="@+id/nav_camera"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="Import"
+            android:visible="true"
+            android:enabled="true"/>
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Gallery"
+            android:visible="true"
+            android:enabled="true"/>
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="Slideshow"
+            android:visible="true"
+            android:enabled="true"/>
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
-
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+            android:id="@+id/logout"
+            android:icon="@mipmap/ic_logout"
+            android:title="Log out"
+            android:visible="true"
+            android:enabled="true"/>
+    </menu>
+    <menu>
+        <item
+            android:id="@+id/help"
+            android:icon="@mipmap/ic_help"
+            android:title="Help"
+            android:visible="true"
+            android:enabled="true"/>
+        <item
+            android:id="@+id/about"
+            android:icon="@mipmap/ic_info"
+            android:title="About"
+            android:visible="true"
+            android:enabled="true"/>
+    </menu>
+</item>
 
 </menu>
