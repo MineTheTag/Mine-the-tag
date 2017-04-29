@@ -10,11 +10,6 @@
     tools:context="com.example.omair.minethetag.MainActivity"
     tools:showIn="@layout/app_bar_main"
     >
-    <org.osmdroid.views.MapView
-        android:id="@+id/mapview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tilesource="Mapnik"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
@@ -27,4 +22,11 @@
         app:elevation="4dp"
         android:icon="@drawable/mina"
         app:layout_anchorGravity="bottom|right|end" />
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapview"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        tilesource="Mapnik"/>
+
 </RelativeLayout>
