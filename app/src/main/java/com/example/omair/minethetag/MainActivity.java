@@ -1,6 +1,7 @@
 package com.example.omair.minethetag;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -21,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.content.Intent;
 
 import com.google.android.gms.location.DetectedActivity;
 
@@ -224,20 +226,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -245,12 +234,35 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            Toast.makeText(getApplicationContext(), "Camera", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.logout)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
+                    R.style.AppTheme_Dark_Dialog);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setMax(10);
+            progressDialog.setMessage("Logging out...");
+            progressDialog.show();
 
-        } else if (id == R.id.nav_slideshow) {
+            new android.os.Handler().postDelayed(
+                    new Runnable() {
+                        public void run() {
 
+                            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                            startActivity(i);
+
+                            progressDialog.dismiss();
+                        }
+                    }, 3000);
+        }
+        else if (id == R.id.help)
+        {
+            Intent a = new Intent(this, HelpActivity.class);
+            startActivity(a);
+        }
+        else if (id == R.id.about)
+        {
+            Intent a = new Intent(this, AboutActivity.class);
+            startActivity(a);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

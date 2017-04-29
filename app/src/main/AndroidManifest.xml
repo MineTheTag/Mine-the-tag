@@ -37,7 +37,16 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".AboutActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.omair.minethetag.MainActivity" />
+        </activity>
+        <activity android:name=".HelpActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.omair.minethetag.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
