@@ -224,6 +224,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginSuccess() {
         _loginButton.setEnabled(true);
+
+        /* Authentification goes here! */
+
         /* Call maps activity */
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
