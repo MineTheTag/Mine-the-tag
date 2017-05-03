@@ -126,8 +126,8 @@ public class SignupActivity extends AppCompatActivity {
     void signUped(final String name, final String password)
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
-        String url = "https://minethetag.cf/";
-        StringRequest MyStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+        String url = "https://minethetag.cf/api/user/registration";
+        StringRequest MyStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 //This code is executed if the server responds, whether or not the response contains data.
@@ -143,7 +143,8 @@ public class SignupActivity extends AppCompatActivity {
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> MyData = new HashMap<String, String>();
-                MyData.put("Field", "Value"); //Add the data you'd like to send to the server.
+                //MyData.put("username", name); //Add the data you'd like to send to the server.
+                //MyData.put("password", password);
                 return MyData;
             }
         };
