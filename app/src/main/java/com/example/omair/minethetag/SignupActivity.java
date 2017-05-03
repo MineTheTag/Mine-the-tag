@@ -1,5 +1,6 @@
 package com.example.omair.minethetag;
 
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +11,31 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -49,7 +75,7 @@ public class SignupActivity extends AppCompatActivity {
         Log.d(TAG, "Signup");
 
         if (!validate()) {
-            onSignupFailed();
+
             return;
         }
 
@@ -61,9 +87,8 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        String name = _nameText.getText().toString();
-        String email = _emailText.getText().toString();
-        String password = _passwordText.getText().toString();
+        final String name = _nameText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
         /* Save data and return to login screen */
@@ -74,7 +99,7 @@ public class SignupActivity extends AppCompatActivity {
                     public void run() {
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
-                        onSignupSuccess();
+                        onSignUp(name, password);
                         // onSignupFailed();
                         progressDialog.dismiss();
                     }
@@ -83,27 +108,64 @@ public class SignupActivity extends AppCompatActivity {
     }
 
 
-    public void onSignupSuccess() {
+    public void onSignUp(String name, String password) {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
+
+        signUped(name, password);
+        /*
         String signup = "YES";
         Intent i = new Intent(SignupActivity.this, LoginActivity.class);
         i.putExtra("FromSignUp", signup);
-        startActivity(i);
+        startActivity(i);*/
         //finish();
     }
 
-    public void onSignupFailed() {
-        Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
+    void signUped(final String name, final String password)
+    {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String call = "https://minethetag.cf/api/user/registration";
+        URL url = null;
+        try {
+            url = new URL(call);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
-        _signupButton.setEnabled(true);
+        final String Response = "null";
+        StringRequest postRequest = new StringRequest(Request.Method.POST, call, new Response.Listener<String>()
+        {
+            @Override
+            public void onResponse(String response) {
+                Toast.makeText(getApplicationContext(), "response " + response, Toast.LENGTH_SHORT).show();
+                Log.d("Response", response);
+            }
+        },
+            new Response.ErrorListener()
+            {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    Log.d("Error.Response", Response);
+                }
+            }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("username", name);
+                params.put("password", password);
+                return params;
+            }
+        };
+        queue.add(postRequest);
     }
 
     public boolean validate() {
         boolean valid = true;
 
         String name = _nameText.getText().toString();
-        String email = _emailText.getText().toString();
         String password = _passwordText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
@@ -111,13 +173,6 @@ public class SignupActivity extends AppCompatActivity {
             valid = false;
         } else {
             _nameText.setError(null);
-        }
-
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
-            valid = false;
-        } else {
-            _emailText.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {

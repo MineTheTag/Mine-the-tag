@@ -10,7 +10,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -25,8 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import fr.quentinklein.slt.LocationTracker;
-import fr.quentinklein.slt.TrackerSettings;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -196,11 +193,23 @@ public class LoginActivity extends AppCompatActivity {
                 new Runnable() {
                     public void run() {
                         // On complete call either onLoginSuccess or onLoginFailed
-                        onLoginSuccess();
+                        TryLogin();
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
                 }, 3000);
+    }
+
+    public void TryLogin() {
+        _loginButton.setEnabled(true);
+
+        /* Check if login is correct */
+        
+
+        /* Call maps activity */
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        //finish();
     }
 
 
@@ -220,17 +229,6 @@ public class LoginActivity extends AppCompatActivity {
     public void onBackPressed() {
         // disable going back to the MainActivity
         moveTaskToBack(true);
-    }
-
-    public void onLoginSuccess() {
-        _loginButton.setEnabled(true);
-
-        /* Authentification goes here! */
-
-        /* Call maps activity */
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
-        //finish();
     }
 
     public void onLoginFailed() {

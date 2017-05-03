@@ -11,7 +11,7 @@ import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
 
-public class Map extends MainActivity {
+public class Maps extends MainActivity {
 
     MapView mapView;
     MapController mapController;
