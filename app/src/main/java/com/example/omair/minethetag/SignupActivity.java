@@ -22,11 +22,13 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -39,12 +41,12 @@ import java.util.logging.Logger;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import retrofit2.Retrofit;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
 
-    @InjectView(R.id.input_name) EditText _nameText;
-    @InjectView(R.id.input_email) EditText _emailText;
+    @InjectView(R.id.username) EditText _username;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_signup) Button _signupButton;
     @InjectView(R.id.link_login) TextView _loginLink;
@@ -87,7 +89,7 @@ public class SignupActivity extends AppCompatActivity {
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
 
-        final String name = _nameText.getText().toString();
+        final String name = _username.getText().toString();
         final String password = _passwordText.getText().toString();
 
         // TODO: Implement your own signup logic here.
@@ -123,56 +125,42 @@ public class SignupActivity extends AppCompatActivity {
 
     void signUped(final String name, final String password)
     {
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String call = "https://minethetag.cf/api/user/registration";
-        URL url = null;
-        try {
-            url = new URL(call);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-        final String Response = "null";
-        StringRequest postRequest = new StringRequest(Request.Method.POST, call, new Response.Listener<String>()
-        {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/";
+        StringRequest MyStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(getApplicationContext(), "response " + response, Toast.LENGTH_SHORT).show();
-                Log.d("Response", response);
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
             }
-        },
-            new Response.ErrorListener()
-            {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                    Log.d("Error.Response", Response);
-                }
-            }
-        ) {
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("username", name);
-                params.put("password", password);
-                return params;
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "BAD", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> MyData = new HashMap<String, String>();
+                MyData.put("Field", "Value"); //Add the data you'd like to send to the server.
+                return MyData;
             }
         };
-        queue.add(postRequest);
+        MyRequestQueue.add(MyStringRequest);
     }
 
     public boolean validate() {
         boolean valid = true;
 
-        String name = _nameText.getText().toString();
+        String name = _username.getText().toString();
         String password = _passwordText.getText().toString();
 
         if (name.isEmpty() || name.length() < 3) {
-            _nameText.setError("at least 3 characters");
+            _username.setError("at least 3 characters");
             valid = false;
         } else {
-            _nameText.setError(null);
+            _username.setError(null);
         }
 
         if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
