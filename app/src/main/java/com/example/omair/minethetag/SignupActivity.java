@@ -16,6 +16,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -114,25 +115,51 @@ public class SignupActivity extends AppCompatActivity {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
 
-        signUped(name, password);
+        boolean correct = signUped(name, password);
+        Toast.makeText(getApplicationContext(), "Correct = " + correct, Toast.LENGTH_SHORT).show();
+        if (correct) {
+            Toast.makeText(getApplicationContext(), "sucesssss", Toast.LENGTH_SHORT).show();
+
+            Intent i = new Intent(SignupActivity.this, LoginActivity.class);
+            startActivity(i);
+        }
+        else {
+
+        }
         /*
         String signup = "YES";
         Intent i = new Intent(SignupActivity.this, LoginActivity.class);
-        i.putExtra("FromSignUp", signup);
+
         startActivity(i);*/
         //finish();
     }
 
-    void signUped(final String name, final String password)
+    boolean resultat;
+
+    boolean signUped(final String name, final String password)
     {
+
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/user/registration";
-        StringRequest MyStringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("username", name);
+        params.put("password", password);
+
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+                if (response.toString().contains("success"))
+                {
+                    Toast.makeText(getApplicationContext(), "ALTA", Toast.LENGTH_SHORT).show();
+                    resultat = true;
+                }
+                else resultat = false;
+
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -149,6 +176,8 @@ public class SignupActivity extends AppCompatActivity {
             }
         };
         MyRequestQueue.add(MyStringRequest);
+        Toast.makeText(getApplicationContext(),"before = " + resultat, Toast.LENGTH_SHORT).show();
+        return resultat;
     }
 
     public boolean validate() {

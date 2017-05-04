@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.content.Intent;
@@ -22,6 +23,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
@@ -29,6 +43,7 @@ import io.nlopez.smartlocation.SmartLocation;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
+
     private static final int REQUEST_SIGNUP = 0;
     @InjectView(R.id.input_username) EditText _usernameText;
     @InjectView(R.id.input_password) EditText _passwordText;
@@ -168,7 +183,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        //Toast.makeText(getApplicationContext(), "Now you can signup", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Account created, now you can signin", Toast.LENGTH_LONG).show();
+
     }
 
     public void login() {
@@ -180,6 +196,9 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         _loginButton.setEnabled(false);
+
+        final String username = _usernameText.getText().toString();
+        final String password = _passwordText.getText().toString();
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -193,23 +212,64 @@ public class LoginActivity extends AppCompatActivity {
                 new Runnable() {
                     public void run() {
                         // On complete call either onLoginSuccess or onLoginFailed
-                        TryLogin();
+                        TryLogin(username, password);
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
                 }, 3000);
     }
 
-    public void TryLogin() {
+    public void TryLogin(final String username, final String password) {
         _loginButton.setEnabled(true);
 
         /* Check if login is correct */
-        
+        boolean correct = loginn(username, password);
 
         /* Call maps activity */
         Intent i = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(i);
         //finish();
+    }
+
+    boolean loginn(final String username, final String password)
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/user/registration";
+
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("username", username);
+        params.put("password", password);
+
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                if (response.toString().contains("success"))
+                {
+                    Toast.makeText(getApplicationContext(), "ALTA", Toast.LENGTH_SHORT).show();
+
+                }
+
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "BAD", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                Map<String, String> MyData = new HashMap<String, String>();
+                //MyData.put("username", name); //Add the data you'd like to send to the server.
+                //MyData.put("password", password);
+                return MyData;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
+        return true;
     }
 
 
