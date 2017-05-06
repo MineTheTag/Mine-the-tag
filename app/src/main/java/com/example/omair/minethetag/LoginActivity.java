@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -31,16 +32,50 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.Base64;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import cz.msebera.android.httpclient.HttpEntity;
+import cz.msebera.android.httpclient.HttpHost;
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.HttpStatus;
+import cz.msebera.android.httpclient.StatusLine;
+import cz.msebera.android.httpclient.auth.AuthScope;
+import cz.msebera.android.httpclient.auth.UsernamePasswordCredentials;
+import cz.msebera.android.httpclient.client.ClientProtocolException;
+import cz.msebera.android.httpclient.client.CredentialsProvider;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.impl.auth.BasicScheme;
+import cz.msebera.android.httpclient.impl.client.AbstractHttpClient;
+import cz.msebera.android.httpclient.impl.client.BasicCredentialsProvider;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.protocol.BasicHttpContext;
+import cz.msebera.android.httpclient.util.EntityUtils;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
+import okhttp3.OkHttpClient;
+import okhttp3.internal.http2.Header;
+import retrofit2.Retrofit;
+
+import static android.R.attr.host;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -230,17 +265,21 @@ public class LoginActivity extends AppCompatActivity {
     public void TryLogin(final String username, final String password) {
         _loginButton.setEnabled(true);
         /* Check if login is correct */
-        loginn(username, password);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.setBasicAuth("username","password/token");
+//        client.get("https://minethetag.cf/");
+
+        //loginn(username, password);
     }
 
     boolean loginn(final String username, final String password)
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
-        String url = "https://minethetag.cf/api/user/registration";
+        String url = "https://minethetag.cf/api/token";
 
         Map<String, String> params = new HashMap<String, String>();
-        params.put("username", username);
-        params.put("password", password);
+        //params.put("username", username);
+        //params.put("password", password);
 
         JSONObject jsonObj = new JSONObject(params);
 
@@ -249,12 +288,17 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                if (response.toString().contains("success"))
-                {
-                    Toast.makeText(getApplicationContext(), "ALTA", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
 
-                }
+           }
 
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(
+                        "Authorization",
+                        String.format("Basic %s", Base64.encodeToString(
+                                String.format("%s:%s", username, password).getBytes(), Base64.DEFAULT)));
+                return params;
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -262,6 +306,7 @@ public class LoginActivity extends AppCompatActivity {
                 //This code is executed if there is an error.
                 Toast.makeText(getApplicationContext(), "BAD", Toast.LENGTH_SHORT).show();
             }
+
         }) {
             protected Map<String, String> getParams() {
                 Map<String, String> MyData = new HashMap<String, String>();
