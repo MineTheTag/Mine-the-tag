@@ -46,7 +46,6 @@ import retrofit2.Retrofit;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
-
     @InjectView(R.id.username) EditText _username;
     @InjectView(R.id.input_password) EditText _passwordText;
     @InjectView(R.id.btn_signup) Button _signupButton;
@@ -57,14 +56,12 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
-
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 signup();
             }
         });
-
         _loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,21 +72,16 @@ public class SignupActivity extends AppCompatActivity {
     }
 
     public void signup() {
-        Log.d(TAG, "Signup");
-
         if (!validate()) {
-
+            _passwordText.setText("");
             return;
         }
-
         _signupButton.setEnabled(false);
-
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
                 R.style.AppTheme_Dark_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
-
         final String name = _username.getText().toString();
         final String password = _passwordText.getText().toString();
 
@@ -103,7 +95,6 @@ public class SignupActivity extends AppCompatActivity {
                         // On complete call either onSignupSuccess or onSignupFailed
                         // depending on success
                         onSignUp(name, password);
-                        // onSignupFailed();
                         progressDialog.dismiss();
                     }
                 }, 3000);
@@ -114,38 +105,18 @@ public class SignupActivity extends AppCompatActivity {
     public void onSignUp(String name, String password) {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
-
-        boolean correct = signUped(name, password);
-        Toast.makeText(getApplicationContext(), "Correct = " + correct, Toast.LENGTH_SHORT).show();
-        if (correct) {
-            Toast.makeText(getApplicationContext(), "sucesssss", Toast.LENGTH_SHORT).show();
-
-            Intent i = new Intent(SignupActivity.this, LoginActivity.class);
-            startActivity(i);
-        }
-        else {
-
-        }
-        /*
-        String signup = "YES";
-        Intent i = new Intent(SignupActivity.this, LoginActivity.class);
-
-        startActivity(i);*/
-        //finish();
+        signUped(name, password);
     }
 
-    boolean resultat;
+    boolean resultat = false;
 
     boolean signUped(final String name, final String password)
     {
-
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/user/registration";
-
         Map<String, String> params = new HashMap<String, String>();
         params.put("username", name);
         params.put("password", password);
-
         JSONObject jsonObj = new JSONObject(params);
 
         JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
@@ -155,11 +126,14 @@ public class SignupActivity extends AppCompatActivity {
                 //The String 'response' contains the server's response.
                 if (response.toString().contains("success"))
                 {
-                    Toast.makeText(getApplicationContext(), "ALTA", Toast.LENGTH_SHORT).show();
-                    resultat = true;
+                    LoginActivity.Signuped.signuped = "OK";
+                    Intent i = new Intent(SignupActivity.this, LoginActivity.class);
+                    startActivity(i);
+                } else if (response.toString().contains("existing")) {
+                    _passwordText.setText("");
+                    _username.setText("");
+                    Toast.makeText(getApplicationContext(), "Username " + name + " is not available", Toast.LENGTH_SHORT).show();
                 }
-                else resultat = false;
-
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -176,7 +150,6 @@ public class SignupActivity extends AppCompatActivity {
             }
         };
         MyRequestQueue.add(MyStringRequest);
-        Toast.makeText(getApplicationContext(),"before = " + resultat, Toast.LENGTH_SHORT).show();
         return resultat;
     }
 

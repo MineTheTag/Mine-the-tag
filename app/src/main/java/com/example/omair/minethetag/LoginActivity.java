@@ -2,6 +2,7 @@ package com.example.omair.minethetag;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -52,6 +53,10 @@ public class LoginActivity extends AppCompatActivity {
     private static final int INITIAL = 100;
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
     public static double latitude, longitude;
+
+    public static class Signuped {
+        public static String signuped = "NO";
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -150,8 +155,8 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
-                        Toast.makeText(getApplicationContext(), "Latitude > " + latitude, Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(), "Longitude > " + longitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Latitude > " + latitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Longitude > " + longitude, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -183,8 +188,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();  // Always call the superclass method first
-        Toast.makeText(getApplicationContext(), "Account created, now you can signin", Toast.LENGTH_LONG).show();
-
+        if (LoginActivity.Signuped.signuped.contains("OK"))
+        {
+            Toast.makeText(getApplicationContext(), "Account created", Toast.LENGTH_SHORT).show();
+            LoginActivity.Signuped.signuped = "NO";
+        }
     }
 
     public void login() {
@@ -221,14 +229,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void TryLogin(final String username, final String password) {
         _loginButton.setEnabled(true);
-
         /* Check if login is correct */
-        boolean correct = loginn(username, password);
-
-        /* Call maps activity */
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
-        //finish();
+        loginn(username, password);
     }
 
     boolean loginn(final String username, final String password)
