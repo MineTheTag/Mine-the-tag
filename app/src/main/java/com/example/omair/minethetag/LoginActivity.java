@@ -18,14 +18,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.content.Intent;
+import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.net.MalformedURLException;
+import java.util.*;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -34,20 +38,26 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.Base64;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -57,17 +67,23 @@ import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.HttpStatus;
 import cz.msebera.android.httpclient.StatusLine;
 import cz.msebera.android.httpclient.auth.AuthScope;
+import cz.msebera.android.httpclient.auth.AuthState;
+import cz.msebera.android.httpclient.auth.Credentials;
 import cz.msebera.android.httpclient.auth.UsernamePasswordCredentials;
 import cz.msebera.android.httpclient.client.ClientProtocolException;
 import cz.msebera.android.httpclient.client.CredentialsProvider;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
+import cz.msebera.android.httpclient.client.methods.HttpPut;
+import cz.msebera.android.httpclient.client.protocol.ClientContext;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.auth.BasicScheme;
 import cz.msebera.android.httpclient.impl.client.AbstractHttpClient;
 import cz.msebera.android.httpclient.impl.client.BasicCredentialsProvider;
 import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.protocol.BasicHttpContext;
+import cz.msebera.android.httpclient.protocol.ExecutionContext;
 import cz.msebera.android.httpclient.util.EntityUtils;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -265,11 +281,41 @@ public class LoginActivity extends AppCompatActivity {
     public void TryLogin(final String username, final String password) {
         _loginButton.setEnabled(true);
         /* Check if login is correct */
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.setBasicAuth("username","password/token");
-//        client.get("https://minethetag.cf/");
+
+        //new HttpBasicAuth().authenticate(username, password, "https://minethetag.cf/");
+        //new HttpsBasicAuth().authenticate(username, password, "https://minethetag.cf/");
+        authentificate(username, password);
 
         //loginn(username, password);
+    }
+
+    void authentificate(String username, String password)
+    {
+        try
+        {
+            URL url = new URL("https://minethetag.cf/");
+            String encoding = Base64.encodeToString((username + ":" + password).getBytes(), 1);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestProperty("Authorization", "Basic " + encoding);
+            InputStream content;
+            Toast.makeText(getApplicationContext(), "serveResponse: " + "[" + connection.getResponseCode() +
+                    "/" + connection.getResponseMessage() + "]", Toast.LENGTH_SHORT).show();
+            if(connection.getResponseCode() >= 400) {
+                content = connection.getInputStream();
+            } else {
+                content = connection.getErrorStream();
+                Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+            }
+            BufferedReader bReader = new BufferedReader(new InputStreamReader(content));
+            String line;
+            while((line = bReader.readLine()) != null) {
+                Toast.makeText(getApplicationContext(), "Line = " + line, Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e)
+        {
+
+        }
+
     }
 
     boolean loginn(final String username, final String password)
