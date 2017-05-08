@@ -30,6 +30,8 @@ import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.util.*;
+
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -104,7 +106,8 @@ public class LoginActivity extends AppCompatActivity {
     private static final int INITIAL = 100;
     public static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = INITIAL + 1;
     public static double latitude, longitude;
-
+    public static String gusername, gpassword;
+    public static JSONObject gresponse;
     public static class Signuped {
         public static String signuped = "NO";
     }
@@ -258,6 +261,8 @@ public class LoginActivity extends AppCompatActivity {
 
         final String username = _usernameText.getText().toString();
         final String password = _passwordText.getText().toString();
+        gusername = username;
+        gpassword = password;
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -284,9 +289,9 @@ public class LoginActivity extends AppCompatActivity {
 
         //new HttpBasicAuth().authenticate(username, password, "https://minethetag.cf/");
         //new HttpsBasicAuth().authenticate(username, password, "https://minethetag.cf/");
-        authentificate(username, password);
+        //authentificate(username, password);
 
-        //loginn(username, password);
+        loginn(username, password);
     }
 
     void authentificate(String username, String password)
@@ -329,12 +334,18 @@ public class LoginActivity extends AppCompatActivity {
 
         JSONObject jsonObj = new JSONObject(params);
 
-        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.GET, url, jsonObj, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
+                gresponse = response;
+                if (response.toString().contains("token"))
+                {
+                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(myIntent);
+                }
 
            }
 
@@ -354,11 +365,14 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         }) {
-            protected Map<String, String> getParams() {
-                Map<String, String> MyData = new HashMap<String, String>();
-                //MyData.put("username", name); //Add the data you'd like to send to the server.
-                //MyData.put("password", password);
-                return MyData;
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String credentials = username + ":" + password;
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", auth);
+                return headers;
             }
         };
         MyRequestQueue.add(MyStringRequest);

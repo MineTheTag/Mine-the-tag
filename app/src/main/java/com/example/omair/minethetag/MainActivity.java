@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Base64;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -24,8 +25,17 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import android.content.Intent;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.DetectedActivity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -36,6 +46,8 @@ import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import fr.quentinklein.slt.LocationTracker;
 import fr.quentinklein.slt.TrackerSettings;
@@ -43,8 +55,11 @@ import io.nlopez.smartlocation.OnActivityUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 import static com.example.omair.minethetag.LoginActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.omair.minethetag.LoginActivity.gpassword;
+import static com.example.omair.minethetag.LoginActivity.gusername;
 import static com.example.omair.minethetag.LoginActivity.latitude;
 import static com.example.omair.minethetag.LoginActivity.longitude;
+import static com.example.omair.minethetag.LoginActivity.gresponse;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -57,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     double posMinaY = longitude;
     int TotalMines = 5;
     int inicialMines = 0;
+    public static String gtoken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,10 +170,10 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                double posX = 0, posY = 0;
                 if (inicialMines <= TotalMines)
                 {
                     ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
-                    double posX = 0, posY = 0;
                     if (pos == 1)
                     {
                         posX = posMinaX + radi;
@@ -196,6 +212,8 @@ public class MainActivity extends AppCompatActivity
 
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
+                    authentification();
+                    altaMines(posX, posY);
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -208,6 +226,95 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    void authentification()
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/token";
+
+        Map<String, String> params = new HashMap<String, String>();
+        //params.put("username", username);
+        //params.put("password", password);
+
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.GET, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
+
+                try {
+                    gtoken = response.getString("token");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            public Map<String, String> getHeaders() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(
+                        "Authorization",
+                        String.format("Basic %s", Base64.encodeToString(
+                                String.format("%s:%s", gusername, gpassword).getBytes(), Base64.DEFAULT)));
+                return params;
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "BAD", Toast.LENGTH_SHORT).show();
+            }
+
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String credentials = gusername + ":" + gpassword;
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
+    }
+
+    void altaMines(final double posMinaX, final double posMinaY)
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/mines/new";
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("x_pos", Double.toString(posMinaX));
+        params.put("y_pos", Double.toString(posMinaY));
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "NO MINE", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String credentials = gresponse.toString();
+                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
+    }
 
     @Override
     public void onBackPressed() {
@@ -225,8 +332,6 @@ public class MainActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.activity_main_drawer, menu);
         return true;
     }
-
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
