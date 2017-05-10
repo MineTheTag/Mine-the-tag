@@ -9,6 +9,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -54,12 +55,15 @@ import fr.quentinklein.slt.TrackerSettings;
 import io.nlopez.smartlocation.OnActivityUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
+import static android.R.attr.password;
 import static com.example.omair.minethetag.LoginActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+import static com.example.omair.minethetag.LoginActivity.TOKEN;
 import static com.example.omair.minethetag.LoginActivity.gpassword;
 import static com.example.omair.minethetag.LoginActivity.gusername;
 import static com.example.omair.minethetag.LoginActivity.latitude;
 import static com.example.omair.minethetag.LoginActivity.longitude;
 import static com.example.omair.minethetag.LoginActivity.gresponse;
+import static com.example.omair.minethetag.R.id.username;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,7 +83,6 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Context ctx = getApplicationContext();
-        //important! set your user agent to prevent getting banned from the osm servers
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
         setContentView(R.layout.activity_main);
@@ -88,7 +91,6 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -140,13 +142,18 @@ public class MainActivity extends AppCompatActivity
 
         final MapView map = (MapView) findViewById(R.id.mapview);
         map.setTileSource(TileSourceFactory.MAPNIK);
-        //map.setBuiltInZoomControls(true);
+        map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
 
         IMapController mapController = map.getController();
         mapController.setZoom(20);
         GeoPoint startPoint = new GeoPoint(latitude, longitude);
         mapController.setCenter(startPoint);
+
+        ////////////////////////////////////
+        getMinesUsuari();
+        ////////////////////////////////////
+
 
         ArrayList<OverlayItem> overlayItemArray;
         overlayItemArray = new ArrayList<OverlayItem>();
@@ -212,8 +219,12 @@ public class MainActivity extends AppCompatActivity
 
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
-                    authentification();
+
+
+                    Toast.makeText(getApplicationContext(), "TOKEN = " + TOKEN, Toast.LENGTH_SHORT).show();
                     altaMines(posX, posY);
+
+
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -234,7 +245,6 @@ public class MainActivity extends AppCompatActivity
         Map<String, String> params = new HashMap<String, String>();
         //params.put("username", username);
         //params.put("password", password);
-
         JSONObject jsonObj = new JSONObject(params);
 
         JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.GET, url, jsonObj, new Response.Listener<JSONObject>() {
@@ -280,6 +290,38 @@ public class MainActivity extends AppCompatActivity
         MyRequestQueue.add(MyStringRequest);
     }
 
+    void getMinesUsuari()
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/mines/get";
+        Map<String, String> params = new HashMap<String, String>();
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "L'usuari no te mines encara", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<String, String>();
+                String auth = "Basic " + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
+    }
+
     void altaMines(final double posMinaX, final double posMinaY)
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
@@ -305,10 +347,8 @@ public class MainActivity extends AppCompatActivity
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
-                String credentials = gresponse.toString();
-                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-                headers.put("Content-Type", "application/json");
+                Map<String, String> headers = new HashMap<String, String>();
+                String auth = "Basic " + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
                 headers.put("Authorization", auth);
                 return headers;
             }

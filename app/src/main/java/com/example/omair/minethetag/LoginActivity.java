@@ -108,6 +108,8 @@ public class LoginActivity extends AppCompatActivity {
     public static double latitude, longitude;
     public static String gusername, gpassword;
     public static JSONObject gresponse;
+    public static String TOKEN;
+
     public static class Signuped {
         public static String signuped = "NO";
     }
@@ -339,10 +341,17 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
                 gresponse = response;
                 if (response.toString().contains("token"))
                 {
+                    try
+                    {
+                        TOKEN = response.getString("token");
+                        Toast.makeText(getApplicationContext(), "Token = " + TOKEN, Toast.LENGTH_SHORT).show();
+                    } catch (Exception e)
+                    {
+
+                    }
                     Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(myIntent);
                 }
