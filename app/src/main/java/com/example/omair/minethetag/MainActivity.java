@@ -379,7 +379,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.logout)
+        if (id == R.id.insertTag)
+        {
+            Intent a = new Intent(this, InsertTagActivity.class);
+            startActivity(a);
+        }
+        else if (id == R.id.logout)
         {
             final ProgressDialog progressDialog = new ProgressDialog(MainActivity.this,
                     R.style.AppTheme_Dark_Dialog);

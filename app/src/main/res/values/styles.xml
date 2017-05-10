@@ -6,9 +6,9 @@
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryDark">@color/primary_dark</item>
-        <item name="colorAccent">@color/accent</item>
+        <item name="colorPrimary">@color/indigoColor</item>
+        <item name="colorPrimaryDark">@color/fadedBlueColor</item>
+        <item name="colorAccent">@color/indianRedColor</item>
 
         <item name="android:windowBackground">@color/primary</item>
 
@@ -25,6 +25,22 @@
         <item name="colorAccent">@color/white</item>
         <item name="android:textColorPrimary">@color/iron</item>
         <item name="android:background">@color/primary</item>
+    </style>
+
+    <style name="AppTheme.Signup">
+        <item name="colorPrimary">@color/emeraldColor</item>
+        <item name="colorPrimaryDark">@color/hollyGreenColor</item>
+        <item name="colorAccent">@color/accent</item>
+
+        <item name="android:windowBackground">@color/primary</item>
+
+        <item name="colorControlNormal">@color/iron</item>
+        <item name="colorControlActivated">@color/white</item>
+        <item name="colorControlHighlight">@color/white</item>
+        <item name="android:textColorHint">@color/iron</item>
+
+        <item name="colorButtonNormal">@color/primary_darker</item>
+        <item name="android:colorButtonNormal">@color/primary_darker</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
