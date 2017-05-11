@@ -222,8 +222,8 @@ public class MainActivity extends AppCompatActivity
 
 
                     Toast.makeText(getApplicationContext(), "TOKEN = " + TOKEN, Toast.LENGTH_SHORT).show();
-                    altaMines(posX, posY);
-
+                    //altaMines(posX, posY);
+                    test();
 
                     map.invalidate();
                     ++inicialMines;
@@ -315,6 +315,42 @@ public class MainActivity extends AppCompatActivity
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<String, String>();
                 String auth = "Basic " + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
+    }
+
+    void test()
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/test";
+        Map<String, String> params = new HashMap<String, String>();
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.GET, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "Username = " + gusername + " " + "Password = " + gpassword, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "NO USER", Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                String credentials = gusername + ":" + gpassword;
+                String auth = "Basic "
+                        + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
+                headers.put("Content-Type", "application/json");
                 headers.put("Authorization", auth);
                 return headers;
             }
