@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity
         mapController.setCenter(startPoint);
 
         ////////////////////////////////////
-        getMinesUsuari();
+        //getMinesUsuari();
         ////////////////////////////////////
 
 
@@ -221,10 +221,12 @@ public class MainActivity extends AppCompatActivity
                     map.getOverlays().add(overlay);
 
 
-                    Toast.makeText(getApplicationContext(), "TOKEN = " + TOKEN, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "TOKEN = " + TOKEN, Toast.LENGTH_SHORT).show();
                     //altaMines(posX, posY);
                     test();
-
+                    authentification();
+                    getMinesUsuari();
+                    altaMines(0.0, 0.0);
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -279,10 +281,12 @@ public class MainActivity extends AppCompatActivity
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
+                HashMap<String, String> headers = new HashMap<String, String>();
                 String credentials = gusername + ":" + gpassword;
-                String auth = "Basic " + Base64.encodeToString(credentials.getBytes(), Base64.NO_WRAP);
-                headers.put("Content-Type", "application/json");
+                String tok = TOKEN + ":NONE";
+                String auth = "Basic "
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
                 headers.put("Authorization", auth);
                 return headers;
             }
@@ -313,8 +317,12 @@ public class MainActivity extends AppCompatActivity
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                String auth = "Basic " + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
+                HashMap<String, String> headers = new HashMap<String, String>();
+                String credentials = gusername + ":" + gpassword;
+                String tok = TOKEN + ":NONE";
+                String auth = "Basic "
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
                 headers.put("Authorization", auth);
                 return headers;
             }
@@ -340,17 +348,19 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
+                Toast.makeText(getApplicationContext(), "Token == " + TOKEN, Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "Username = " + gusername + " " + "Password = " + gpassword, Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), "NO USER", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<>();
+                HashMap<String, String> headers = new HashMap<String, String>();
                 String credentials = gusername + ":" + gpassword;
+                String tok = TOKEN + ":NONE";
                 String auth = "Basic "
-                        + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
-                headers.put("Content-Type", "application/json");
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
                 headers.put("Authorization", auth);
                 return headers;
             }
@@ -383,8 +393,12 @@ public class MainActivity extends AppCompatActivity
         }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String> headers = new HashMap<String, String>();
-                String auth = "Basic " + Base64.encodeToString(TOKEN.getBytes(), Base64.NO_WRAP);
+                HashMap<String, String> headers = new HashMap<String, String>();
+                String credentials = gusername + ":" + gpassword;
+                String tok = TOKEN + ":NONE";
+                String auth = "Basic "
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
                 headers.put("Authorization", auth);
                 return headers;
             }
