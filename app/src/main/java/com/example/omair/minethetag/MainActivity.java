@@ -32,11 +32,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.DetectedActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osmdroid.api.IMapController;
@@ -50,6 +52,7 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import fr.quentinklein.slt.LocationTracker;
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity
         mapController.setCenter(startPoint);
 
         ////////////////////////////////////
-        //getMinesUsuari();
+        getMinesUsuari();
         ////////////////////////////////////
 
 
@@ -221,14 +224,6 @@ public class MainActivity extends AppCompatActivity
 
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
-
-
-                    //Toast.makeText(getApplicationContext(), "TOKEN = " + TOKEN, Toast.LENGTH_SHORT).show();
-                    //altaMines(posX, posY);
-                    test();
-                    authentification();
-                    getMinesUsuari();
-                    //altaMines(0.0, 0.0);
                     altaMines(posX, posY);
                     map.invalidate();
                     ++inicialMines;
@@ -309,19 +304,35 @@ public class MainActivity extends AppCompatActivity
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/get";
         Map<String, String> params = new HashMap<String, String>();
-        JSONObject jsonObj = new JSONObject(params);
-        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+        JSONArray jsonObj = null;
+        try {
+            jsonObj = new JSONArray(params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONArray>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(JSONArray response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
                 Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+                for(int i = 0; i < response.length(); i++)
+                {
+                    JSONObject objects = null;
+                    try {
+                        objects = response.getJSONObject(i);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
-                Log.wtf("ERROR mines get: ", error.getMessage().toString());
+                //Log.wtf("ERROR mines get: ", error.getMessage().toString());
                 Toast.makeText(getApplicationContext(), "L'usuari no te mines encara", Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -353,7 +364,7 @@ public class MainActivity extends AppCompatActivity
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
                 Log.d("Auth test result: ", response);
-                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -393,7 +404,7 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Mina donada d'alta ", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override

@@ -347,7 +347,7 @@ public class LoginActivity extends AppCompatActivity {
                     try
                     {
                         TOKEN = response.getString("token");
-                     //   Toast.makeText(getApplicationContext(), "Token = " + TOKEN, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Token = " + TOKEN, Toast.LENGTH_SHORT).show();
                     } catch (Exception e)
                     {
 
