@@ -228,7 +228,8 @@ public class MainActivity extends AppCompatActivity
                     test();
                     authentification();
                     getMinesUsuari();
-                    altaMines(0.0, 0.0);
+                    //altaMines(0.0, 0.0);
+                    altaMines(posX, posY);
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -295,14 +296,20 @@ public class MainActivity extends AppCompatActivity
         };
         MyRequestQueue.add(MyStringRequest);
     }
+    /*
+    http://stackoverflow.com/questions/30859044/post-json-object-data-to-get-json-array-response-using-volley-in-android
 
+    Aqui estem treballant amb JSONObjects, pero l'error que dona es que es retorna un JSON array. Per
+    tant peta.
+    O fem servir la solucio indicada a stack overflow o canviem backend
+
+     */
     void getMinesUsuari()
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/get";
         Map<String, String> params = new HashMap<String, String>();
         JSONObject jsonObj = new JSONObject(params);
-
         JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -314,6 +321,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
+                Log.wtf("ERROR mines get: ", error.getMessage().toString());
                 Toast.makeText(getApplicationContext(), "L'usuari no te mines encara", Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -375,9 +383,9 @@ public class MainActivity extends AppCompatActivity
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/new";
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("x_pos", Double.toString(posMinaX));
-        params.put("y_pos", Double.toString(posMinaY));
+        Map<String, Double> params = new HashMap<String, Double>();
+        params.put("x_pos", posMinaX);
+        params.put("y_pos", posMinaY);
         JSONObject jsonObj = new JSONObject(params);
 
         JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
