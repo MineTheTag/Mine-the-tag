@@ -139,9 +139,8 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        SmartLocation.with(getApplicationContext()).location()
+        SmartLocation.with(getApplicationContext()).location().continuous()
                 .start(new OnLocationUpdatedListener() {
-
                     @Override
                     public void onLocationUpdated(Location location)
                     {
@@ -149,7 +148,8 @@ public class MainActivity extends AppCompatActivity
                         longitude = location.getLongitude();
                         oldLat = latitude;
                         oldLon = longitude;
-                        //Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Longitude = " + longitude, Toast.LENGTH_SHORT).show();
                         //CheckExplosio();
                     }
                 });
@@ -244,6 +244,22 @@ public class MainActivity extends AppCompatActivity
                 ActualizarPos();
                 CheckExplosio();
                 getMinesUsuari();
+
+                SmartLocation.with(getApplicationContext()).location().continuous()
+                        .start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location)
+                            {
+                                latitude = location.getLatitude();
+                                longitude = location.getLongitude();
+                                oldLat = latitude;
+                                oldLon = longitude;
+                                Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Longitude = " + longitude, Toast.LENGTH_SHORT).show();
+                                //CheckExplosio();
+                            }
+                        });
+
                 oldLat = latitude;
                 oldLon = longitude;
                 ha.postDelayed(this, 10000);
@@ -318,7 +334,6 @@ public class MainActivity extends AppCompatActivity
             }
         };
         MyRequestQueue.add(MyStringRequest);
-
     }
 
     void getAltresMinesUsuari()
