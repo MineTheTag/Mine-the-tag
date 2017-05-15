@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
                     {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
-                        // CheckExplosio();
+                        CheckExplosio();
                     }
                 });
 
@@ -229,7 +229,6 @@ public class MainActivity extends AppCompatActivity
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
                     altaMines(posX, posY);
-                    //CheckExplosio();
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -256,7 +255,7 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "CORRECTE ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
