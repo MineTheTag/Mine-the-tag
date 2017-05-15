@@ -59,6 +59,7 @@ import java.util.Scanner;
 import fr.quentinklein.slt.LocationTracker;
 import fr.quentinklein.slt.TrackerSettings;
 import io.nlopez.smartlocation.OnActivityUpdatedListener;
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 import static android.R.attr.password;
@@ -136,13 +137,15 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        SmartLocation.with(getApplicationContext()).activityRecognition()
-                .start(new OnActivityUpdatedListener() {
+        SmartLocation.with(getApplicationContext()).location()
+                .start(new OnLocationUpdatedListener() {
 
                     @Override
-                    public void onActivityUpdated(DetectedActivity a)
+                    public void onLocationUpdated(Location location)
                     {
-                       // Toast.makeText(getApplicationContext(), "Latitude : " + latitude, Toast.LENGTH_SHORT).show();
+                        latitude = location.getLatitude();
+                        longitude = location.getLongitude();
+                        // CheckExplosio();
                     }
                 });
 
@@ -226,6 +229,7 @@ public class MainActivity extends AppCompatActivity
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
                     altaMines(posX, posY);
+                    //CheckExplosio();
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -235,6 +239,45 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+    }
+
+    void CheckExplosio()
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/mines/check/explosion";
+        Map<String, Double> params = new HashMap<String, Double>();
+        params.put("x_pos", latitude);
+        params.put("y_pos", longitude);
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                Toast.makeText(getApplicationContext(), "CORRECTE ", Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                Log.d("CHECK: ", "MISSATGE = " + error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                String credentials = gusername + ":" + gpassword;
+                String tok = TOKEN + ":NONE";
+                String auth = "Basic "
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
 
     }
 
@@ -425,7 +468,7 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "Mina donada d'alta ", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Mina donada d'alta ", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override

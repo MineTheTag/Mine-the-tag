@@ -211,7 +211,7 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
-                        //Toast.makeText(getApplicationContext(), "Latitude > " + latitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Latitude 1 " + latitude, Toast.LENGTH_SHORT).show();
                         //Toast.makeText(getApplicationContext(), "Longitude > " + longitude, Toast.LENGTH_SHORT).show();
                     }
                 });
