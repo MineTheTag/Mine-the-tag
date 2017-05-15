@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity
 
         ////////////////////////////////////
         getMinesUsuari();
+        getAltresMinesUsuari();
         ////////////////////////////////////
 
 
@@ -289,7 +290,7 @@ public class MainActivity extends AppCompatActivity
                 //The String 'response' contains the server's response.
                 if (response.toString().contains("Booom"))
                 {
-                    Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "BOOOOOOM " + response, Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
@@ -318,6 +319,76 @@ public class MainActivity extends AppCompatActivity
         };
         MyRequestQueue.add(MyStringRequest);
 
+    }
+
+    void getAltresMinesUsuari()
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/admin/mines/getdiff";
+        Map<String, String> params = new HashMap<String, String>();
+        JSONArray jsonObj = null;
+        try {
+            jsonObj = new JSONArray(params);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                //Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
+                for (int i = 0; i < response.length(); i++)
+                {
+                    JSONArray pos = null;
+                    try {
+                        pos = (JSONArray) response.get(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Double posX = null;
+                    Double posY = null;
+                    try {
+                        posX = (Double) pos.get(0);
+                        posY = (Double) pos.get(1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    ArrayList<OverlayItem> overlayItemArray;
+                    overlayItemArray = new ArrayList<OverlayItem>();
+                    OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
+                    Drawable newMarker = getResources().getDrawable(R.drawable.mine28_admin);
+                    mina.setMarker(newMarker);
+                    overlayItemArray.add(mina);
+
+                    MapView map = (MapView) findViewById(R.id.mapview);
+                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                    map.getOverlays().add(overlay);
+                    map.invalidate();
+                }
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+                //Log.wtf("ERROR mines get: ", error.getMessage().toString());
+                Log.d("ALTRES", "MISSATGE = " + error.toString());
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                String credentials = gusername + ":" + gpassword;
+                String tok = TOKEN + ":NONE";
+                String auth = "Basic "
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
     }
 
     void getMinesUsuari()
@@ -372,7 +443,7 @@ public class MainActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
                 //Log.wtf("ERROR mines get: ", error.getMessage().toString());
-                Toast.makeText(getApplicationContext(), "L'usuari no te mines encara", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "L'usuari no te mines encara", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
