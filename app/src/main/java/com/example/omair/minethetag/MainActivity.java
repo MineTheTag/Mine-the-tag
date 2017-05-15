@@ -61,6 +61,7 @@ import fr.quentinklein.slt.TrackerSettings;
 import io.nlopez.smartlocation.OnActivityUpdatedListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
+import android.os.*;
 
 import static android.R.attr.password;
 import static com.example.omair.minethetag.LoginActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onLocationFound(Location location) {
-
+                Toast.makeText(getApplicationContext(), "LocationTracker = " + location.getLatitude(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -145,7 +146,8 @@ public class MainActivity extends AppCompatActivity
                     {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
-                        CheckExplosio();
+                        //Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
+                        //CheckExplosio();
                     }
                 });
 
@@ -238,6 +240,16 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
+
+        final Handler ha = new Handler();
+        ha.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                CheckExplosio();
+                ha.postDelayed(this, 10000);
+            }
+        }, 10000);
 
     }
 
