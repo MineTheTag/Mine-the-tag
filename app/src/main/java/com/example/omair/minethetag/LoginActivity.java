@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         int active = 0;
-        if (!mWifi.isConnected()) {
+        /*if (!mWifi.isConnected()) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setMessage("We need to activate wifi.");
             alertDialog.setPositiveButton("Continue",
@@ -144,7 +144,8 @@ public class LoginActivity extends AppCompatActivity {
                     });
             alertDialog.show();
             active = 1;
-        }
+        }*/
+        active = 1;
 
         // Check if gps is active
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
@@ -167,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (active == 1)
         {
-            Toast.makeText(getApplicationContext(), "Wifi activated", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(getApplicationContext(), "Wifi activated", Toast.LENGTH_SHORT).show();
         }
         else if (active == 2)
         {
