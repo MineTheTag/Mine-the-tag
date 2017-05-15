@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity
 
         // Add the overlay to the MapView
         map.getOverlays().add(itemizedIconOverlay);
+        map.invalidate();
     }
 
     void CheckExplosio()
