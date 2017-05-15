@@ -247,10 +247,28 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 CheckExplosio();
+                getMinesUsuari();
+                ActualizarPos();
+
                 ha.postDelayed(this, 10000);
             }
         }, 10000);
 
+    }
+
+    void ActualizarPos()
+    {
+        final MapView map = (MapView) findViewById(R.id.mapview);
+        ArrayList<OverlayItem> overlayItemArray;
+        overlayItemArray = new ArrayList<OverlayItem>();
+        OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
+        Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
+        linkopingItem.setMarker(newMarker);
+        overlayItemArray.add(linkopingItem);
+        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+
+        // Add the overlay to the MapView
+        map.getOverlays().add(itemizedIconOverlay);
     }
 
     void CheckExplosio()
