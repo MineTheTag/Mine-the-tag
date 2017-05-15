@@ -255,7 +255,15 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
+                if (response.toString().contains("Booom"))
+                {
+                    Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "CALM ", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
