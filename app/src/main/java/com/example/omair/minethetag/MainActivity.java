@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity
     double radi = 0.00019;
     double posMinaX = latitude;
     double posMinaY = longitude;
+    double oldLat, oldLon;
     int TotalMines = 5;
     int inicialMines = 0;
     public static String gtoken;
@@ -146,6 +147,8 @@ public class MainActivity extends AppCompatActivity
                     {
                         latitude = location.getLatitude();
                         longitude = location.getLongitude();
+                        oldLat = latitude;
+                        oldLon = longitude;
                         //Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
                         //CheckExplosio();
                     }
@@ -166,16 +169,7 @@ public class MainActivity extends AppCompatActivity
         ////////////////////////////////////
 
 
-        ArrayList<OverlayItem> overlayItemArray;
-        overlayItemArray = new ArrayList<OverlayItem>();
-        OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
-        Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
-        linkopingItem.setMarker(newMarker);
-        overlayItemArray.add(linkopingItem);
-        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
-
-        // Add the overlay to the MapView
-        map.getOverlays().add(itemizedIconOverlay);
+        ActualizarPos();
 
         RotationGestureOverlay mRotationGestureOverlay = new RotationGestureOverlay(getApplicationContext(), map);
         mRotationGestureOverlay.setEnabled(true);
@@ -246,10 +240,11 @@ public class MainActivity extends AppCompatActivity
         ha.postDelayed(new Runnable() {
             @Override
             public void run() {
+                ActualizarPos();
                 CheckExplosio();
                 getMinesUsuari();
-                ActualizarPos();
-
+                oldLat = latitude;
+                oldLon = longitude;
                 ha.postDelayed(this, 10000);
             }
         }, 10000);
@@ -259,15 +254,21 @@ public class MainActivity extends AppCompatActivity
     void ActualizarPos()
     {
         final MapView map = (MapView) findViewById(R.id.mapview);
-        ArrayList<OverlayItem> overlayItemArray;
-        overlayItemArray = new ArrayList<OverlayItem>();
+        ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+        ArrayList<OverlayItem> overlayItemArray2 = new ArrayList<OverlayItem>();
+
         OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
+        OverlayItem linkopingItemOld = new OverlayItem("Current", "Location", new GeoPoint(oldLat, oldLon));
+
         Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
         linkopingItem.setMarker(newMarker);
         overlayItemArray.add(linkopingItem);
-        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+        overlayItemArray2.add(linkopingItemOld);
 
+        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlayOld = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray2, null);
         // Add the overlay to the MapView
+        map.getOverlays().remove(itemizedIconOverlayOld);
         map.getOverlays().add(itemizedIconOverlay);
         map.invalidate();
     }
@@ -336,7 +337,7 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONArray response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
                 for (int i = 0; i < response.length(); i++)
                 {
                     JSONArray pos = null;
