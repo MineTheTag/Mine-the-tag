@@ -241,10 +241,11 @@ public class MainActivity extends AppCompatActivity
         ha.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ActualizarPos();
+
                 CheckExplosio();
                 getMinesUsuari();
                 getAltresMinesUsuari();
+                ActualizarPos();
 
                 SmartLocation.with(getApplicationContext()).location().continuous()
                         .start(new OnLocationUpdatedListener() {
