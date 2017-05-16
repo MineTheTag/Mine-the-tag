@@ -22,8 +22,7 @@ public class InsertTagActivity extends AppCompatActivity {
     private TextView mTextView;
     private NfcAdapter mNfcAdapter;
     private PendingIntent pendingIntent;
-    private IntentFilter ndef;
-    private IntentFilter[] intentFiltersArray;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +44,6 @@ public class InsertTagActivity extends AppCompatActivity {
         pendingIntent = PendingIntent.getActivity(
                 this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
-        IntentFilter ndef = new IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED);
-        try {
-            ndef.addDataType("*/*");    /* Handles all MIME based dispatches.
-                                       You should specify only the ones that you need. */
-        }
-        catch (IntentFilter.MalformedMimeTypeException e) {
-            throw new RuntimeException("fail", e);
-        }
-        intentFiltersArray = new IntentFilter[]{ndef,};
 
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -85,14 +75,15 @@ public class InsertTagActivity extends AppCompatActivity {
 
     public void onResume() {
         super.onResume();
-        mNfcAdapter.enableForegroundDispatch(this, pendingIntent, intentFiltersArray, null);
+        mNfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
     }
 
 
     public void onNewIntent(Intent intent) {
         Tag tagFromIntent = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         Log.d("NFC", "INTENT RECV");
-        if (intent != null && NfcAdapter.ACTION_NDEF_DISCOVERED.equals(intent.getAction())) {
+        Log.d("Intent action", intent.getAction().toString());
+        if (intent != null && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             mTextView.setText(tagFromIntent.getId().toString());
         }
     }
