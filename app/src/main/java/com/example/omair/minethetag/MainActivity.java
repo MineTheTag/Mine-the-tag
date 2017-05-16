@@ -244,6 +244,7 @@ public class MainActivity extends AppCompatActivity
                 ActualizarPos();
                 CheckExplosio();
                 getMinesUsuari();
+                getAltresMinesUsuari();
 
                 SmartLocation.with(getApplicationContext()).location().continuous()
                         .start(new OnLocationUpdatedListener() {
@@ -254,8 +255,8 @@ public class MainActivity extends AppCompatActivity
                                 longitude = location.getLongitude();
                                 oldLat = latitude;
                                 oldLon = longitude;
-                                Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getApplicationContext(), "Longitude = " + longitude, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), "Longitude = " + longitude, Toast.LENGTH_SHORT).show();
                                 //CheckExplosio();
                             }
                         });
@@ -306,7 +307,45 @@ public class MainActivity extends AppCompatActivity
                 //The String 'response' contains the server's response.
                 if (response.toString().contains("Booom"))
                 {
-                    Toast.makeText(getApplicationContext(), "BOOOOOOM " + response, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
+                    try {
+                        JSONArray a = response.getJSONArray("exploded_mines");
+                        Toast.makeText(getApplicationContext(), "EXPLOTADES = " + a, Toast.LENGTH_SHORT).show();
+                        // Mines que exploten
+                        for (int i = 0; i < a.length(); i++)
+                        {
+                            JSONArray pos = null;
+                            try {
+                                pos = (JSONArray) a.get(i);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Double posX = null;
+                            Double posY = null;
+                            try {
+                                posX = (Double) pos.get(0);
+                                posY = (Double) pos.get(1);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            ArrayList<OverlayItem> overlayItemArray;
+                            overlayItemArray = new ArrayList<OverlayItem>();
+                            OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
+                            Drawable newMarker = getResources().getDrawable(R.drawable.mine28_exploted);
+                            mina.setMarker(newMarker);
+                            overlayItemArray.add(mina);
+
+                            MapView map = (MapView) findViewById(R.id.mapview);
+                            MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                            map.getOverlays().add(overlay);
+                            map.invalidate();
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    // Dormir l'usuari durant 3 minuts
+
                 }
                 else
                 {
