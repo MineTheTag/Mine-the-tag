@@ -8,4 +8,9 @@
     tools:context="com.example.omair.minethetag.InsertTagActivity"
     tools:showIn="@layout/activity_insert_tag">
 
+    <TextView
+        android:id="@+id/textView_explanation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Explanation" />
 </android.support.constraint.ConstraintLayout>

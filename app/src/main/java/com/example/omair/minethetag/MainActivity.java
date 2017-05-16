@@ -340,15 +340,8 @@ public class MainActivity extends AppCompatActivity
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/admin/mines/getdiff";
-        Map<String, String> params = new HashMap<String, String>();
-        JSONArray jsonObj = null;
-        try {
-            jsonObj = new JSONArray(params);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONArray>() {
+        JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 //This code is executed if the server responds, whether or not the response contains data.
@@ -410,15 +403,8 @@ public class MainActivity extends AppCompatActivity
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/get";
-        Map<String, String> params = new HashMap<String, String>();
-        JSONArray jsonObj = null;
-        try {
-            jsonObj = new JSONArray(params);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONArray>() {
+        JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 //This code is executed if the server responds, whether or not the response contains data.
