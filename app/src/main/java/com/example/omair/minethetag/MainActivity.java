@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity
                 MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                 map.getOverlays().add(overlay);
                 //altaMines(posX, posY);
-
+                SystemClock.sleep(30000);
                 CountDownTimer a = new CountDownTimer(30000, 1000) {
 
                     public void onTick(long millisUntilFinished) {
