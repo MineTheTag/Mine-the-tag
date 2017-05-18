@@ -11,21 +11,15 @@
     <item android:title="">
         <menu >
             <item
-                android:id="@+id/nav_camera"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="Import"
-                android:visible="true"
-                android:enabled="true"/>
-            <item
-                android:id="@+id/nav_gallery"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="Gallery"
-                android:visible="true"
-                android:enabled="true"/>
-            <item
-                android:id="@+id/insertTag"
+                android:id="@+id/newTag"
                 android:icon="@mipmap/ic_plus"
-                android:title="Insert tag"
+                android:title="New Tag"
+                android:visible="true"
+                android:enabled="true"/>
+            <item
+                android:id="@+id/captureTag"
+                android:icon="@drawable/center"
+                android:title="Capture Tag"
                 android:visible="true"
                 android:enabled="true"/>
             <item

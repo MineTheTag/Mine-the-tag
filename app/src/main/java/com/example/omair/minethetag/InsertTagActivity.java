@@ -49,7 +49,7 @@ public class InsertTagActivity extends AppCompatActivity {
     private TextView mTextView;
     private NfcAdapter mNfcAdapter;
     private PendingIntent pendingIntent;
-
+    public Long idl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +111,8 @@ public class InsertTagActivity extends AppCompatActivity {
         Log.d("Intent action", intent.getAction().toString());
         if (intent != null && NfcAdapter.ACTION_TAG_DISCOVERED.equals(intent.getAction())) {
             byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-            Long idl = toDec(id);
+            idl = toDec(id);
             alta_tag(latitude, longitude);
-            pinta_tag();
             mTextView.setText(idl.toString());
             Log.d("TAGDEC", idl.toString());
         }
@@ -121,7 +120,16 @@ public class InsertTagActivity extends AppCompatActivity {
 
     void pinta_tag()
     {
+        MapView map = (MapView) findViewById(R.id.mapview);
+        ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+        OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(latitude, longitude));
+        Drawable newMarker = getResources().getDrawable(R.drawable.tag_propi);
+        mina.setMarker(newMarker);
+        overlayItemArray.add(mina);
 
+        MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+        map.getOverlays().add(overlay);
+        map.invalidate();
     }
 
     private long toDec(byte[] bytes) {
@@ -143,7 +151,11 @@ public class InsertTagActivity extends AppCompatActivity {
         params.put("x_pos", latitude);
         params.put("y_pos", longitude);
         JSONObject jsonObj = new JSONObject(params);
-
+        try {
+            jsonObj.put("tag_id", idl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -152,6 +164,8 @@ public class InsertTagActivity extends AppCompatActivity {
                 if (response.toString().contains("OK"))
                 {
                     Toast.makeText(getApplicationContext(), "Tag donat d'alta", Toast.LENGTH_SHORT).show();
+                    pinta_tag();
+                    retorna();
                 }
                 else
                 {
@@ -179,6 +193,12 @@ public class InsertTagActivity extends AppCompatActivity {
             }
         };
         MyRequestQueue.add(MyStringRequest);
+    }
+
+    void retorna()
+    {
+        Intent a = new Intent(this, MainActivity.class);
+        startActivity(a);
     }
 
 }

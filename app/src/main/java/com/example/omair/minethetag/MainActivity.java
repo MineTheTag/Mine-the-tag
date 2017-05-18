@@ -200,55 +200,49 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 double posX = 0, posY = 0;
-                if (inicialMines <= TotalMines)
+                ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+                if (pos == 1)
                 {
-                    ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
-                    if (pos == 1)
-                    {
-                        posX = posMinaX + radi;
-                        posY = posMinaY;
-                        pos = 2;
-                    }
-                    else if (pos == 2)
-                    {
-                        posX = posMinaX;
-                        posY = posMinaY - radi;
-                        pos = 3;
-                    }
-                    else if (pos == 3)
-                    {
-                        posX = posMinaX - radi;
-                        posY = posMinaY;
-                        pos = 4;
-                    }
-                    else if (pos == 4)
-                    {
-                        posX = posMinaX;
-                        posY = posMinaY + radi;
-                        pos = 5;
-                    }
-                    else if (pos == 5)
-                    {
-                        posX = posMinaX + radi;
-                        posY = posMinaY + radi;
-                        pos = 1;
-                    }
-
-                    OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
-                    Drawable newMarker = getResources().getDrawable(R.drawable.mine28);
-                    mina.setMarker(newMarker);
-                    overlayItemArray.add(mina);
-
-                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                    map.getOverlays().add(overlay);
-                    //altaMines(posX, posY);
-                    map.invalidate();
-                    ++inicialMines;
+                    posX = posMinaX + radi;
+                    posY = posMinaY;
+                    pos = 2;
                 }
-                else
+                else if (pos == 2)
                 {
-                    Toast.makeText(getApplicationContext(), "You cannot insert more mines!", Toast.LENGTH_SHORT).show();
+                    posX = posMinaX;
+                    posY = posMinaY - radi;
+                    pos = 3;
                 }
+                else if (pos == 3)
+                {
+                    posX = posMinaX - radi;
+                    posY = posMinaY;
+                    pos = 4;
+                }
+                else if (pos == 4)
+                {
+                    posX = posMinaX;
+                    posY = posMinaY + radi;
+                    pos = 5;
+                }
+                else if (pos == 5)
+                {
+                    posX = posMinaX + radi;
+                    posY = posMinaY + radi;
+                    pos = 1;
+                }
+
+                OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
+                Drawable newMarker = getResources().getDrawable(R.drawable.mine28);
+                mina.setMarker(newMarker);
+                overlayItemArray.add(mina);
+
+                MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                map.getOverlays().add(overlay);
+                altaMines(posX, posY);
+                map.invalidate();
+                ++inicialMines;
+
             }
         });
 
@@ -658,7 +652,18 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(JSONObject response) {
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
-                //Toast.makeText(getApplicationContext(), "Mina donada d'alta ", Toast.LENGTH_SHORT).show();
+                try {
+                    if (response.getString("result").equals("OK"))
+                    {
+                        Toast.makeText(getApplicationContext(), "Mina donada de alta", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "You cannot insert more mines", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -705,7 +710,12 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.insertTag)
+        if (id == R.id.newTag)
+        {
+            Intent a = new Intent(this, NewTagActivity.class);
+            startActivity(a);
+        }
+        else if (id == R.id.captureTag)
         {
             Intent a = new Intent(this, InsertTagActivity.class);
             startActivity(a);
