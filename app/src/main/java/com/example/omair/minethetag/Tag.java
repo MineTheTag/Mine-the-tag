@@ -66,6 +66,11 @@ public class Tag {
 
     }
 
+    public String toString(){
+        return "TAG id: " + id + "\n TAG x: " + x + "TAG y: " + y +
+                "\n TAG owner: "+ owner_name + "\n";
+    }
+
     public boolean equals(Object obj) {
         if ( obj.getClass() == Tag.class ){
             Tag o = (Tag) obj;

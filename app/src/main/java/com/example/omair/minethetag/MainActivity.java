@@ -91,6 +91,7 @@ public class MainActivity extends AppCompatActivity
     //ArrayList<OverlayItem> osm_mines;
     ItemizedIconOverlay<OverlayItem> osm_items;
     ItemizedIconOverlay<OverlayItem> osm_mines;
+    Tags tags;
     OverlayItem osm_pos;
 
     @Override
@@ -169,10 +170,10 @@ public class MainActivity extends AppCompatActivity
         mapController.setZoom(20);
         GeoPoint startPoint = new GeoPoint(latitude, longitude);
         mapController.setCenter(startPoint);
-
+        //TODO: REENABLE
         ////////////////////////////////////
-        getMinesUsuari();
-        getAltresMinesUsuari();
+        //getMinesUsuari();
+        //getAltresMinesUsuari();
         ////////////////////////////////////
 
         // OSM //
@@ -185,6 +186,11 @@ public class MainActivity extends AppCompatActivity
         map.getOverlays().add(osm_items);
         map.getOverlays().add(osm_mines);
 
+
+        // TAGS //
+        tags = new Tags(this.getApplicationContext());
+        map.getOverlays().add(tags.osm_tags);
+        tags.update_tags();
 
         ActualizarPos();
 
@@ -253,8 +259,10 @@ public class MainActivity extends AppCompatActivity
             public void run() {
 
                 CheckExplosio();
-                getMinesUsuari();
-                getAltresMinesUsuari();
+                //TODO: REENABLE
+                //getMinesUsuari();
+                //getAltresMinesUsuari();
+                //REENABLE FIN
                 ActualizarPos();
 
                 SmartLocation.with(getApplicationContext()).location().continuous()
