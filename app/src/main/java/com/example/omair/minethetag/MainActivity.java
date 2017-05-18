@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 import android.content.Intent;
 
@@ -239,7 +240,18 @@ public class MainActivity extends AppCompatActivity
 
                 MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                 map.getOverlays().add(overlay);
-                altaMines(posX, posY);
+                //altaMines(posX, posY);
+
+                CountDownTimer a = new CountDownTimer(30000, 1000) {
+
+                    public void onTick(long millisUntilFinished) {
+                        Toast.makeText(getApplicationContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                    }
+
+                    public void onFinish() {
+                        Toast.makeText(getApplicationContext(), "FINISHED: ", Toast.LENGTH_SHORT).show();
+                    }
+                }.start();
                 map.invalidate();
                 ++inicialMines;
 
@@ -379,11 +391,20 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     // Dormir l'usuari durant 3 minuts
+                    CountDownTimer a = new CountDownTimer(30000, 1000) {
 
+                        public void onTick(long millisUntilFinished) {
+                            Toast.makeText(getApplicationContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
+                        }
+
+                        public void onFinish() {
+                            Toast.makeText(getApplicationContext(), "FINISHED: ", Toast.LENGTH_SHORT).show();
+                        }
+                    }.start();
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "CALM ", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "CALM ", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -517,7 +538,7 @@ public class MainActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
                 //Log.wtf("ERROR mines get: ", error.getMessage().toString());
-                //Toast.makeText(getApplicationContext(), "L'usuari no te mines encara", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -571,7 +592,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
-                Toast.makeText(getApplicationContext(), "BAD", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
             }
 
         }) {
@@ -655,7 +676,7 @@ public class MainActivity extends AppCompatActivity
                 try {
                     if (response.getString("result").equals("OK"))
                     {
-                        Toast.makeText(getApplicationContext(), "Mina donada de alta", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Mina donada de alta", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
