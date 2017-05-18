@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity
 
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
-                    altaMines(posX, posY);
+                    //altaMines(posX, posY);
                     map.invalidate();
                     ++inicialMines;
                 }
@@ -346,6 +346,8 @@ public class MainActivity extends AppCompatActivity
                 if (response.toString().contains("Booom"))
                 {
                     Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
+                    Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                    v.vibrate(1000);
                     try {
                         JSONArray a = response.getJSONArray("exploded_mines");
                         Toast.makeText(getApplicationContext(), "EXPLOTADES = " + a, Toast.LENGTH_SHORT).show();

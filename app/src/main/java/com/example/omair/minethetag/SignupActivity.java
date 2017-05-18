@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -44,6 +46,11 @@ import java.util.logging.Logger;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import retrofit2.Retrofit;
+
+import com.example.omair.minethetag.LoginActivity;
+
+import static android.R.attr.name;
+import static android.R.attr.password;
 
 public class SignupActivity extends AppCompatActivity {
     private static final String TAG = "SignupActivity";
@@ -128,6 +135,7 @@ public class SignupActivity extends AppCompatActivity {
                 //The String 'response' contains the server's response.
                 if (response.toString().contains("success"))
                 {
+                    //login(name, password);
                     LoginActivity.Signuped.signuped = "OK";
                     Intent i = new Intent(SignupActivity.this, LoginActivity.class);
                     startActivity(i);

@@ -325,7 +325,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    boolean loginn(final String username, final String password)
+    void loginn(final String username, final String password)
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/token";
@@ -385,7 +385,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
         MyRequestQueue.add(MyStringRequest);
-        return true;
     }
 
 
