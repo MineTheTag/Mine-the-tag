@@ -47,6 +47,7 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
+import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 
@@ -86,6 +87,11 @@ public class MainActivity extends AppCompatActivity
     int TotalMines = 5;
     int inicialMines = 0;
     public static String gtoken;
+    //ArrayList<OverlayItem> osm_items;
+    //ArrayList<OverlayItem> osm_mines;
+    ItemizedIconOverlay<OverlayItem> osm_items;
+    ItemizedIconOverlay<OverlayItem> osm_mines;
+    OverlayItem osm_pos;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +174,16 @@ public class MainActivity extends AppCompatActivity
         getMinesUsuari();
         getAltresMinesUsuari();
         ////////////////////////////////////
+
+        // OSM //
+        //osm_items = new ArrayList<OverlayItem>();
+        //osm_mines = new ArrayList<OverlayItem>();
+        osm_items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+
+        //osm_items.addItem(osm_pos);
+        osm_mines = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+        map.getOverlays().add(osm_items);
+        map.getOverlays().add(osm_mines);
 
 
         ActualizarPos();
@@ -264,7 +280,8 @@ public class MainActivity extends AppCompatActivity
 
                 oldLat = latitude;
                 oldLon = longitude;
-                ha.postDelayed(this, 10000);
+                ActualizarPos();
+                ha.postDelayed(this, 2000);
             }
         }, 10000);
 
@@ -273,22 +290,42 @@ public class MainActivity extends AppCompatActivity
     void ActualizarPos()
     {
         final MapView map = (MapView) findViewById(R.id.mapview);
-        ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
-        ArrayList<OverlayItem> overlayItemArray2 = new ArrayList<OverlayItem>();
+        //ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+        //ArrayList<OverlayItem> overlayItemArray2 = new ArrayList<OverlayItem>();
 
-        OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
-        OverlayItem linkopingItemOld = new OverlayItem("Current", "Location", new GeoPoint(oldLat, oldLon));
+        //OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
+        //OverlayItem linkopingItemOld = new OverlayItem("Current", "Location", new GeoPoint(oldLat, oldLon));
 
-        Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
-        linkopingItem.setMarker(newMarker);
-        overlayItemArray.add(linkopingItem);
-        overlayItemArray2.add(linkopingItemOld);
 
-        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
-        final ItemizedIconOverlay<OverlayItem> itemizedIconOverlayOld = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray2, null);
+        //Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
+        //osm_pos.setMarker(newMarker);
+        //overlayItemArray.add(linkopingItem);
+        //overlayItemArray2.add(linkopingItemOld);
+
+        //final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
+        //final ItemizedIconOverlay<OverlayItem> itemizedIconOverlayOld = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray2, null);
         // Add the overlay to the MapView
-        map.getOverlays().remove(itemizedIconOverlayOld);
-        map.getOverlays().add(itemizedIconOverlay);
+
+        //map.getOverlays().add(itemizedIconOverlay);
+
+        //map.getOverlays().add(osm_pos);
+
+        if ( osm_pos != null ) {
+            //Log.d("OSM DEL", Boolean.toString(osm_items.removeItem(osm_pos)));
+            osm_items.removeItem(osm_pos);
+
+        }
+
+        Log.d("Pos", latitude + ":" + longitude);
+
+        osm_pos = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
+        Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
+        osm_pos.setMarker(newMarker);
+
+        osm_items.addItem(osm_pos);
+
+        Log.d("Overlay num", Integer.toString(map.getOverlays().size()));
+
         map.invalidate();
     }
 
