@@ -21,6 +21,7 @@
     <color name="okElement">#388E3C</color>
     <color name="deleteElement">#B71C1C</color>
     <color name="accent">#B71C1C</color>
-
+    <color name="emeraldGreen">@color/emeraldColor</color>
+    <color name="indigoBlue">@color/indigoColor</color>
 
 </resources>

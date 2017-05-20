@@ -45,7 +45,7 @@
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".SignupActivity"
-            android:theme="@style/AppTheme.Dark" />
+            android:theme="@style/AppTheme.Signup" />
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -90,7 +90,8 @@
         <activity
             android:name=".NewTagActivity"
             android:label="@string/title_activity_new_tag"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BlockedActivity"></activity>
     </application>
 
 </manifest>

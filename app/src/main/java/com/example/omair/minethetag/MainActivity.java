@@ -6,28 +6,24 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.SyncStateContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 import android.content.Intent;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,8 +33,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.location.DetectedActivity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,38 +42,27 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.Overlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Scanner;
-
 import fr.quentinklein.slt.LocationTracker;
 import fr.quentinklein.slt.TrackerSettings;
-import io.nlopez.smartlocation.OnActivityUpdatedListener;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 import android.os.*;
-
-import static android.R.attr.password;
 import static com.example.omair.minethetag.LoginActivity.MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
 import static com.example.omair.minethetag.LoginActivity.TOKEN;
 import static com.example.omair.minethetag.LoginActivity.gpassword;
 import static com.example.omair.minethetag.LoginActivity.gusername;
 import static com.example.omair.minethetag.LoginActivity.latitude;
 import static com.example.omair.minethetag.LoginActivity.longitude;
-import static com.example.omair.minethetag.LoginActivity.gresponse;
-import static com.example.omair.minethetag.R.id.username;
+import static com.example.omair.minethetag.R.id.info;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-
-    LocationManager locationManager;
     int pos = 1;
     double radi = 0.00019;
     double posMinaX = latitude;
@@ -100,11 +83,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -122,20 +103,6 @@ public class MainActivity extends AppCompatActivity
                         .setUsePassive(true)
                         .setTimeBetweenUpdates(30 * 1000)
                         .setMetersBetweenUpdates(5);
-
-        LocationTracker tracker = new LocationTracker(getApplicationContext(), settings) {
-
-            @Override
-            public void onLocationFound(Location location) {
-                Toast.makeText(getApplicationContext(), "LocationTracker = " + location.getLatitude(), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onTimeout() {
-
-            }
-        };
-        //tracker.startListening();
 
         if (SmartLocation.with(getApplicationContext()).location().state().locationServicesEnabled())
         {
@@ -155,8 +122,8 @@ public class MainActivity extends AppCompatActivity
                         longitude = location.getLongitude();
                         oldLat = latitude;
                         oldLon = longitude;
-                        Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
-                        Toast.makeText(getApplicationContext(), "Longitude = " + longitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Latitude = " + latitude, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), "Longitude = " + longitude, Toast.LENGTH_SHORT).show();
                         //CheckExplosio();
                     }
                 });
@@ -171,10 +138,8 @@ public class MainActivity extends AppCompatActivity
         GeoPoint startPoint = new GeoPoint(latitude, longitude);
         mapController.setCenter(startPoint);
 
-        ////////////////////////////////////
         getMinesUsuari();
         getAltresMinesUsuari();
-        ////////////////////////////////////
 
         // OSM //
         //osm_items = new ArrayList<OverlayItem>();
@@ -185,7 +150,6 @@ public class MainActivity extends AppCompatActivity
         osm_mines = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
         map.getOverlays().add(osm_items);
         map.getOverlays().add(osm_mines);
-
 
         ActualizarPos();
 
@@ -240,21 +204,11 @@ public class MainActivity extends AppCompatActivity
 
                 MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                 map.getOverlays().add(overlay);
-                //altaMines(posX, posY);
-                SystemClock.sleep(30000);
-                CountDownTimer a = new CountDownTimer(30000, 1000) {
-
-                    public void onTick(long millisUntilFinished) {
-                        Toast.makeText(getApplicationContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
-                    }
-
-                    public void onFinish() {
-                        Toast.makeText(getApplicationContext(), "FINISHED: ", Toast.LENGTH_SHORT).show();
-                    }
-                }.start();
+                altaMines(posX, posY);
+                //Intent a = new Intent(MainActivity.this, BlockedActivity.class);
+                //startActivity(a);
                 map.invalidate();
                 ++inicialMines;
-
             }
         });
 
@@ -263,7 +217,6 @@ public class MainActivity extends AppCompatActivity
         ha.postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 CheckExplosio();
                 getMinesUsuari();
                 getAltresMinesUsuari();
@@ -290,48 +243,26 @@ public class MainActivity extends AppCompatActivity
                 ha.postDelayed(this, 2000);
             }
         }, 10000);
-
     }
 
     void ActualizarPos()
     {
         final MapView map = (MapView) findViewById(R.id.mapview);
-        //ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
-        //ArrayList<OverlayItem> overlayItemArray2 = new ArrayList<OverlayItem>();
-
-        //OverlayItem linkopingItem = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
-        //OverlayItem linkopingItemOld = new OverlayItem("Current", "Location", new GeoPoint(oldLat, oldLon));
-
-
-        //Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
-        //osm_pos.setMarker(newMarker);
-        //overlayItemArray.add(linkopingItem);
-        //overlayItemArray2.add(linkopingItemOld);
-
-        //final ItemizedIconOverlay<OverlayItem> itemizedIconOverlay = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray, null);
-        //final ItemizedIconOverlay<OverlayItem> itemizedIconOverlayOld = new ItemizedIconOverlay<OverlayItem>(this, overlayItemArray2, null);
-        // Add the overlay to the MapView
-
-        //map.getOverlays().add(itemizedIconOverlay);
-
-        //map.getOverlays().add(osm_pos);
-
         if ( osm_pos != null ) {
             //Log.d("OSM DEL", Boolean.toString(osm_items.removeItem(osm_pos)));
             osm_items.removeItem(osm_pos);
 
         }
-
         Log.d("Pos", latitude + ":" + longitude);
-
+        IMapController mapController = map.getController();
+        mapController.setZoom(20);
+        GeoPoint startPoint = new GeoPoint(latitude, longitude);
+        mapController.setCenter(startPoint);
         osm_pos = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
         Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
         osm_pos.setMarker(newMarker);
-
         osm_items.addItem(osm_pos);
-
         Log.d("Overlay num", Integer.toString(map.getOverlays().size()));
-
         map.invalidate();
     }
 
@@ -353,7 +284,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     Toast.makeText(getApplicationContext(), "BOOOOOOM ", Toast.LENGTH_SHORT).show();
                     Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                    v.vibrate(1000);
+                    v.vibrate(2000);
                     try {
                         JSONArray a = response.getJSONArray("exploded_mines");
                         Toast.makeText(getApplicationContext(), "EXPLOTADES = " + a, Toast.LENGTH_SHORT).show();
@@ -391,22 +322,12 @@ public class MainActivity extends AppCompatActivity
                         e.printStackTrace();
                     }
                     // Dormir l'usuari durant 3 minuts
-                    CountDownTimer a = new CountDownTimer(30000, 1000) {
 
-                        public void onTick(long millisUntilFinished) {
-                            Toast.makeText(getApplicationContext(), "seconds remaining: " + millisUntilFinished / 1000, Toast.LENGTH_SHORT).show();
-                        }
-
-                        public void onFinish() {
-                            Toast.makeText(getApplicationContext(), "FINISHED: ", Toast.LENGTH_SHORT).show();
-                        }
-                    }.start();
                 }
                 else
                 {
                     //Toast.makeText(getApplicationContext(), "CALM ", Toast.LENGTH_SHORT).show();
                 }
-
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -497,7 +418,6 @@ public class MainActivity extends AppCompatActivity
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/get";
-
         JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
@@ -560,7 +480,6 @@ public class MainActivity extends AppCompatActivity
     {
         RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/token";
-
         Map<String, String> params = new HashMap<String, String>();
         //params.put("username", username);
         //params.put("password", password);
@@ -610,15 +529,6 @@ public class MainActivity extends AppCompatActivity
         };
         MyRequestQueue.add(MyStringRequest);
     }
-    /*
-    http://stackoverflow.com/questions/30859044/post-json-object-data-to-get-json-array-response-using-volley-in-android
-
-    Aqui estem treballant amb JSONObjects, pero l'error que dona es que es retorna un JSON array. Per
-    tant peta.
-    O fem servir la solucio indicada a stack overflow o canviem backend
-
-     */
-
 
     void test()
     {

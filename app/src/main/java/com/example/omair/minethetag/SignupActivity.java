@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,10 +21,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
 import org.json.JSONObject;
 import org.json.JSONTokener;
-
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -42,13 +39,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import retrofit2.Retrofit;
 
 import com.example.omair.minethetag.LoginActivity;
-
 import static android.R.attr.name;
 import static android.R.attr.password;
 
@@ -64,6 +59,8 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         ButterKnife.inject(this);
+        getWindow().setNavigationBarColor(getResources().getColor(R.color.emeraldGreen));
+
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,7 +84,7 @@ public class SignupActivity extends AppCompatActivity {
         }
         _signupButton.setEnabled(false);
         final ProgressDialog progressDialog = new ProgressDialog(SignupActivity.this,
-                R.style.AppTheme_Dark_Dialog);
+                R.style.AppTheme_Green_Dialog);
         progressDialog.setIndeterminate(true);
         progressDialog.setMessage("Creating Account...");
         progressDialog.show();
@@ -141,15 +138,15 @@ public class SignupActivity extends AppCompatActivity {
                     startActivity(i);
                 } else if (response.toString().contains("existing")) {
                     _passwordText.setText("");
-                    _username.setText("");
-                    Toast.makeText(getApplicationContext(), "Username " + name + " is not available", Toast.LENGTH_SHORT).show();
+                    //_username.setText("");
+                    Toast.makeText(getApplicationContext(), "Username " + name + " is not available", Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
-                Toast.makeText(getApplicationContext(), "BAD", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
             }
         }) {
             protected Map<String, String> getParams() {
