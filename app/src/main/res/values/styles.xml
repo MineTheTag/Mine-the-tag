@@ -71,4 +71,9 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
+    <style name="AppTheme.CustomTheme" >
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+
 </resources>

@@ -446,8 +446,8 @@ public class MainActivity extends AppCompatActivity
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    // Dormir l'usuari durant 3 minuts
-
+                    // Dormir l'usuari durant 3 minuts (de moment nomes 10 segons per la demo)
+                    startActivity(new Intent(MainActivity.this, pop.class));
                 }
                 else
                 {
@@ -768,7 +768,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.newTag)
         {
-            Intent a = new Intent(this, pop.class);
+            Intent a = new Intent(this, NewTagActivity.class);
             startActivity(a);
         }
         else if (id == R.id.captureTag)

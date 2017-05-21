@@ -100,7 +100,10 @@
         <activity
             android:name=".CaptureTagActivity"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".pop" > </activity>
+        <activity
+            android:name=".pop"
+            android:theme="@style/AppTheme.CustomTheme"
+            > </activity>
     </application>
 
 </manifest>

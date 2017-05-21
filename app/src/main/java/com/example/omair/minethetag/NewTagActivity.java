@@ -147,7 +147,7 @@ public class NewTagActivity extends AppCompatActivity {
                 }
                 else
                 {
-                    Toast.makeText(getApplicationContext(), "New TAG created", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "New TAG created", Toast.LENGTH_LONG).show();
                     mTextView.setText("New Tag created");
                     pinta_tag();
                 }

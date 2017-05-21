@@ -142,13 +142,13 @@ public class CaptureTagActivity extends AppCompatActivity {
                 //The String 'response' contains the server's response.
                 if (response.toString().contains("OK"))
                 {
-                    Toast.makeText(getApplicationContext(), "Tag captured", Toast.LENGTH_SHORT).show();
-                    //mTextView.setText("New Tag created");
+                    //Toast.makeText(getApplicationContext(), "Tag captured", Toast.LENGTH_SHORT).show();
+                    mTextView.setText("Tag captured");
                 }
                 else if (response.toString().contains("exist"))
                 {
-                    Toast.makeText(getApplicationContext(), "Tag doesn't exist", Toast.LENGTH_SHORT).show();
-                    //   mTextView.setText("Tag doesn't exist");
+                    //Toast.makeText(getApplicationContext(), "Tag doesn't exist", Toast.LENGTH_SHORT).show();
+                       mTextView.setText("Tag doesn't exist");
                 }
                 Handler a = new Handler();
                 a.postDelayed(new Runnable() {
