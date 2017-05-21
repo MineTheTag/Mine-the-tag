@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -783,6 +784,11 @@ public class MainActivity extends AppCompatActivity
             progressDialog.setMax(10);
             progressDialog.setMessage("Logging out...");
             progressDialog.show();
+
+            SharedPreferences settings = getPreferences(0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("TOKEN",null);
+            editor.commit();
 
             new android.os.Handler().postDelayed(
                     new Runnable() {

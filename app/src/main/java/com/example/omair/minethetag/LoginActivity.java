@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -28,6 +29,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -57,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     public static String gusername, gpassword;
     public static JSONObject gresponse;
     public static String TOKEN;
+    protected RequestQueue req_queue;
 
     public static class Signuped {
         public static String signuped = "NO";
@@ -75,6 +78,8 @@ public class LoginActivity extends AppCompatActivity {
                 login();
             }
         });
+
+        req_queue = Volley.newRequestQueue(this);
 
         // Check if wifi is active
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -153,6 +158,43 @@ public class LoginActivity extends AppCompatActivity {
                         longitude = location.getLongitude();
                     }
                 });
+
+        // Check if user already logged in, and load its Token, continue to app
+        SharedPreferences settings = getPreferences(0);
+        final String token = settings.getString("TOKEN","NOTOKEN");
+        if (! token.equals("NOTOKEN")){
+            String url = "https://minethetag.cf/test";
+
+            StringRequest MyStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    //VALID TOKEN, continue
+                    TOKEN = token;
+                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(myIntent);
+
+                }
+            }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    //Do nothing, user will login
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    String credentials = gusername + ":" + gpassword;
+                    String tok = token + ":NONE";
+                    String auth = "Basic "
+                            + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                    //headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", auth);
+                    return headers;
+                }
+            };
+            req_queue.add(MyStringRequest);
+        }
+
     }
 
     @Override
@@ -249,6 +291,10 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         Log.d("LOGIN = ", e.toString());
                     }
+                    SharedPreferences settings = getPreferences(0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("TOKEN",TOKEN);
+                    editor.commit();
                     Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(myIntent);
                 }
