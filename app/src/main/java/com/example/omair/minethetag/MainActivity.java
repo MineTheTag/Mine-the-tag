@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -11,7 +12,6 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +22,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 import android.content.Intent;
 import com.android.volley.AuthFailureError;
@@ -47,7 +49,6 @@ import org.osmdroid.views.overlay.gestures.RotationGestureOverlay;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import fr.quentinklein.slt.LocationTracker;
 import fr.quentinklein.slt.TrackerSettings;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -58,7 +59,6 @@ import static com.example.omair.minethetag.LoginActivity.gpassword;
 import static com.example.omair.minethetag.LoginActivity.gusername;
 import static com.example.omair.minethetag.LoginActivity.latitude;
 import static com.example.omair.minethetag.LoginActivity.longitude;
-import static com.example.omair.minethetag.R.id.info;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -140,6 +142,7 @@ public class MainActivity extends AppCompatActivity
 
         getMinesUsuari();
         getAltresMinesUsuari();
+        getTags();
 
         // OSM //
         //osm_items = new ArrayList<OverlayItem>();
@@ -212,6 +215,17 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab2.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IMapController mapController = map.getController();
+                mapController.setZoom(20);
+                GeoPoint startPoint = new GeoPoint(latitude, longitude);
+                mapController.setCenter(startPoint);
+            }
+        });
 
         final Handler ha = new Handler();
         ha.postDelayed(new Runnable() {
@@ -220,6 +234,7 @@ public class MainActivity extends AppCompatActivity
                 CheckExplosio();
                 getMinesUsuari();
                 getAltresMinesUsuari();
+                getTags();
                 ActualizarPos();
 
                 SmartLocation.with(getApplicationContext()).location().continuous()
@@ -254,16 +269,124 @@ public class MainActivity extends AppCompatActivity
 
         }
         Log.d("Pos", latitude + ":" + longitude);
-        IMapController mapController = map.getController();
-        mapController.setZoom(20);
-        GeoPoint startPoint = new GeoPoint(latitude, longitude);
-        mapController.setCenter(startPoint);
+
         osm_pos = new OverlayItem("Current", "Location", new GeoPoint(latitude, longitude));
         Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
         osm_pos.setMarker(newMarker);
         osm_items.addItem(osm_pos);
         Log.d("Overlay num", Integer.toString(map.getOverlays().size()));
         map.invalidate();
+    }
+
+    void getTags()
+    {
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
+        String url = "https://minethetag.cf/api/tags/get";
+        Map<String, Double> params = new HashMap<String, Double>();
+        JSONObject jsonObj = new JSONObject(params);
+
+        JsonObjectRequest MyStringRequest = new JsonObjectRequest(Request.Method.POST, url, jsonObj, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                JSONArray propis = null;
+                JSONArray aliens = null;
+                try {
+                    propis = response.getJSONArray("tags propis");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    aliens = response.getJSONArray("tags aliens");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                for (int i = 0; i < aliens.length(); i++)
+                {
+                    JSONObject a = null;
+                    try {
+                        a = aliens.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Double posX = null;
+                    Double posY = null;
+                    try {
+                        posX = (Double) a.get("x_pos");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        posY = (Double) a.get("y_pos");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    ArrayList<OverlayItem> overlayItemArray;
+                    overlayItemArray = new ArrayList<OverlayItem>();
+                    OverlayItem mina = new OverlayItem("New", "TAG", new GeoPoint(posX, posY));
+                    Drawable newMarker = getResources().getDrawable(R.drawable.tag_extern);
+                    mina.setMarker(newMarker);
+                    overlayItemArray.add(mina);
+
+                    MapView map = (MapView) findViewById(R.id.mapview);
+                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                    map.getOverlays().add(overlay);
+                    map.invalidate();
+                }
+                for (int i = 0; i < propis.length(); i++)
+                {
+                    JSONObject a = null;
+                    try {
+                        a = propis.getJSONObject(i);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Double posX = null;
+                    Double posY = null;
+                    try {
+                        posX = (Double) a.get("x_pos");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        posY = (Double) a.get("y_pos");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    ArrayList<OverlayItem> overlayItemArray;
+                    overlayItemArray = new ArrayList<OverlayItem>();
+                    OverlayItem mina = new OverlayItem("New", "TAG", new GeoPoint(posX, posY));
+                    Drawable newMarker = getResources().getDrawable(R.drawable.tag_propi);
+                    mina.setMarker(newMarker);
+                    overlayItemArray.add(mina);
+
+                    MapView map = (MapView) findViewById(R.id.mapview);
+                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                    map.getOverlays().add(overlay);
+                    map.invalidate();
+                }
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //This code is executed if there is an error.
+
+            }
+        }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                String credentials = gusername + ":" + gpassword;
+                String tok = TOKEN + ":NONE";
+                String auth = "Basic "
+                        + Base64.encodeToString(tok.getBytes(), Base64.NO_WRAP);
+                //headers.put("Content-Type", "application/json");
+                headers.put("Authorization", auth);
+                return headers;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
     }
 
     void CheckExplosio()
@@ -458,7 +581,7 @@ public class MainActivity extends AppCompatActivity
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
                 //Log.wtf("ERROR mines get: ", error.getMessage().toString());
-                Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), "Server Error get mines", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -511,7 +634,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onErrorResponse(VolleyError error) {
                 //This code is executed if there is an error.
-                Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Server Error authentification", Toast.LENGTH_SHORT).show();
             }
 
         }) {
@@ -648,7 +771,7 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.captureTag)
         {
-            Intent a = new Intent(this, InsertTagActivity.class);
+            Intent a = new Intent(this, CaptureTagActivity.class);
             startActivity(a);
         }
         else if (id == R.id.logout)

@@ -3,13 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:bwq="http://schemas.android.com/tools"
-    android:background="@color/indigoColor"
-    >
+    android:background="@color/indigoColor">
 
     <group android:checkableBehavior="single"></group>
 
     <item android:title="">
-        <menu >
+        <menu app:showAsAction="never" >
             <item
                 android:id="@+id/newTag"
                 android:icon="@mipmap/ic_plus"
