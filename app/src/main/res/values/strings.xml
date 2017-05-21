@@ -25,4 +25,8 @@
     <string name="title_activity_help">HelpActivity</string>
     <string name="title_activity_insert_tag">InsertTagActivity</string>
     <string name="title_activity_new_tag">NewTagActivity</string>
+
+    <string name="title_activity_block">BlockActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

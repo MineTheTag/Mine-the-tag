@@ -37,5 +37,9 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'org.osmdroid:osmdroid-android:5.6.4'
     compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.android.support:support-v4:25.2.0'
+    compile 'com.mikhaellopez:circularprogressbar:1.1.1'
+    compile 'com.github.lzyzsd:circleprogress:1.2.1'
+    compile 'com.github.CardinalNow:Android-CircleProgressIndicator:v0.2'
     testCompile 'junit:junit:4.12'
 }

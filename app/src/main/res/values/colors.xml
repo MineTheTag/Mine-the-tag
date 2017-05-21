@@ -24,4 +24,6 @@
     <color name="emeraldGreen">@color/emeraldColor</color>
     <color name="indigoBlue">@color/indigoColor</color>
 
+    <color name="black_overlay">#66000000</color>
+
 </resources>

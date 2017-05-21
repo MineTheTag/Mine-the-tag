@@ -3,6 +3,7 @@ package com.example.omair.minethetag;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -12,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -766,13 +768,12 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.newTag)
         {
-            Intent a = new Intent(this, NewTagActivity.class);
+            Intent a = new Intent(this, pop.class);
             startActivity(a);
         }
         else if (id == R.id.captureTag)
         {
-            Intent a = new Intent(this, CaptureTagActivity.class);
-            startActivity(a);
+            startActivity(new Intent(this, CaptureTagActivity.class));
         }
         else if (id == R.id.logout)
         {
