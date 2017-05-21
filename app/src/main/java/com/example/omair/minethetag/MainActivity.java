@@ -77,7 +77,11 @@ public class MainActivity extends AppCompatActivity
     //ArrayList<OverlayItem> osm_items;
     //ArrayList<OverlayItem> osm_mines;
     ItemizedIconOverlay<OverlayItem> osm_items;
-    ItemizedIconOverlay<OverlayItem> osm_mines;
+    MyOwnItemizedOverlay osm_mines_propies;
+    MyOwnItemizedOverlay osm_mines_alienes;
+    MyOwnItemizedOverlay osm_mines_explotades;
+    MyOwnItemizedOverlay osm_tags_propis;
+    MyOwnItemizedOverlay osm_tags_aliens;
     OverlayItem osm_pos;
 
     @Override
@@ -153,9 +157,17 @@ public class MainActivity extends AppCompatActivity
         osm_items = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
 
         //osm_items.addItem(osm_pos);
-        osm_mines = new ItemizedIconOverlay<OverlayItem>(this, new ArrayList<OverlayItem>(), null);
+        osm_mines_propies = new MyOwnItemizedOverlay(getApplicationContext(), new ArrayList<OverlayItem>());
+        osm_mines_alienes = new MyOwnItemizedOverlay(getApplicationContext(), new ArrayList<OverlayItem>());
+        osm_mines_explotades = new MyOwnItemizedOverlay(getApplicationContext(), new ArrayList<OverlayItem>());
+        osm_tags_propis = new MyOwnItemizedOverlay(getApplicationContext(), new ArrayList<OverlayItem>());
+        osm_tags_aliens = new MyOwnItemizedOverlay(getApplicationContext(), new ArrayList<OverlayItem>());
         map.getOverlays().add(osm_items);
-        map.getOverlays().add(osm_mines);
+        map.getOverlays().add(osm_mines_propies);
+        map.getOverlays().add(osm_mines_alienes);
+        map.getOverlays().add(osm_mines_explotades);
+        map.getOverlays().add(osm_tags_propis);
+        map.getOverlays().add(osm_tags_aliens);
 
         ActualizarPos();
 
@@ -335,6 +347,8 @@ public class MainActivity extends AppCompatActivity
                     MapView map = (MapView) findViewById(R.id.mapview);
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
+                    map.getOverlays().remove(osm_tags_aliens);
+                    osm_tags_aliens = overlay;
                     map.invalidate();
                 }
                 for (int i = 0; i < propis.length(); i++)
@@ -367,6 +381,8 @@ public class MainActivity extends AppCompatActivity
                     MapView map = (MapView) findViewById(R.id.mapview);
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
+                    map.getOverlays().remove(osm_tags_propis);
+                    osm_tags_propis = overlay;
                     map.invalidate();
                 }
             }
@@ -440,6 +456,8 @@ public class MainActivity extends AppCompatActivity
                             MapView map = (MapView) findViewById(R.id.mapview);
                             MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                             map.getOverlays().add(overlay);
+                            map.getOverlays().remove(osm_mines_explotades);
+                            osm_mines_explotades = overlay;
                             map.invalidate();
 
                         }
@@ -512,6 +530,8 @@ public class MainActivity extends AppCompatActivity
                     MapView map = (MapView) findViewById(R.id.mapview);
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
+                    map.getOverlays().remove(osm_mines_alienes);
+                    osm_mines_alienes = overlay;
                     map.invalidate();
                 }
             }
@@ -573,6 +593,8 @@ public class MainActivity extends AppCompatActivity
                     MapView map = (MapView) findViewById(R.id.mapview);
                     MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
                     map.getOverlays().add(overlay);
+                    map.getOverlays().remove(osm_mines_propies);
+                    osm_mines_propies = overlay;
                     map.invalidate();
                 }
             }
