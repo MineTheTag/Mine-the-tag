@@ -6,4 +6,6 @@
     android:layout_height="match_parent"
     tools:context="com.example.omair.minethetag.CaptureTagActivity">
 
+    <include layout="@layout/content_new_tag" />
+
 </android.support.constraint.ConstraintLayout>

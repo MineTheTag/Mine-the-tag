@@ -95,7 +95,10 @@
                 android:value="com.example.omair.minethetag.MainActivity" />
         </activity>
         <activity android:name=".BlockedActivity" />
-        <activity android:name=".CaptureTagActivity"></activity>
+        <activity
+            android:name=".CaptureTagActivity"
+            android:theme="@style/AppTheme.Dark">
+        </activity>
     </application>
 
 </manifest>
