@@ -126,7 +126,6 @@ public class CaptureTagActivity extends AppCompatActivity {
 
     void capture_tag(Double latitude, Double longitude)
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/tags/capture";
         Map<String, Double> params = new HashMap<String, Double>();
         JSONObject jsonObj = new JSONObject(params);
@@ -196,7 +195,7 @@ public class CaptureTagActivity extends AppCompatActivity {
 
             }
         });
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
 

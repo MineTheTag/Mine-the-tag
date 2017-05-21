@@ -59,7 +59,6 @@ public class LoginActivity extends AppCompatActivity {
     public static String gusername, gpassword;
     public static JSONObject gresponse;
     public static String TOKEN;
-    protected RequestQueue req_queue;
 
     public static class Signuped {
         public static String signuped = "NO";
@@ -79,7 +78,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        req_queue = Volley.newRequestQueue(this);
 
         // Check if wifi is active
         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -192,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
                     return headers;
                 }
             };
-            req_queue.add(MyStringRequest);
+            MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
         }
 
     }
@@ -271,7 +269,6 @@ public class LoginActivity extends AppCompatActivity {
 
     void loginn(final String username, final String password)
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/token";
         Map<String, String> params = new HashMap<String, String>();
         JSONObject jsonObj = new JSONObject(params);
@@ -323,7 +320,7 @@ public class LoginActivity extends AppCompatActivity {
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
 

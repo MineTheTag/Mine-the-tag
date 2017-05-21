@@ -118,7 +118,6 @@ public class SignupActivity extends AppCompatActivity {
 
     boolean signUped(final String name, final String password)
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/user/registration";
         Map<String, String> params = new HashMap<String, String>();
         params.put("username", name);
@@ -156,7 +155,7 @@ public class SignupActivity extends AppCompatActivity {
                 return MyData;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
         return resultat;
     }
 

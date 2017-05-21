@@ -124,7 +124,6 @@ public class NewTagActivity extends AppCompatActivity {
 
     void alta_tag(Double latitude, Double longitude)
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/tags/new";
         Map<String, Double> params = new HashMap<String, Double>();
         params.put("x_pos", latitude);
@@ -197,6 +196,6 @@ public class NewTagActivity extends AppCompatActivity {
 
             }
         });
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 }

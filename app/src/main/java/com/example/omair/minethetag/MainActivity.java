@@ -394,7 +394,6 @@ public class MainActivity extends AppCompatActivity
 
     void CheckExplosio()
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/check/explosion";
         Map<String, Double> params = new HashMap<String, Double>();
         params.put("x_pos", latitude);
@@ -474,12 +473,11 @@ public class MainActivity extends AppCompatActivity
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
     void getAltresMinesUsuari()
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/admin/mines/getdiff";
 
         JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
@@ -537,12 +535,11 @@ public class MainActivity extends AppCompatActivity
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
     void getMinesUsuari()
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/get";
         JsonArrayRequest MyStringRequest = new JsonArrayRequest(Request.Method.POST, url, null, new Response.Listener<JSONArray>() {
             @Override
@@ -599,12 +596,11 @@ public class MainActivity extends AppCompatActivity
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
     void authentification()
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/token";
         Map<String, String> params = new HashMap<String, String>();
         //params.put("username", username);
@@ -653,12 +649,11 @@ public class MainActivity extends AppCompatActivity
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
     void test()
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/test";
         Map<String, String> params = new HashMap<String, String>();
         JSONObject jsonObj = new JSONObject(params);
@@ -692,12 +687,11 @@ public class MainActivity extends AppCompatActivity
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
     void altaMines(final double posMinaX, final double posMinaY)
     {
-        RequestQueue MyRequestQueue = Volley.newRequestQueue(this);
         String url = "https://minethetag.cf/api/mines/new";
         Map<String, Double> params = new HashMap<String, Double>();
         params.put("x_pos", posMinaX);
@@ -741,7 +735,7 @@ public class MainActivity extends AppCompatActivity
                 return headers;
             }
         };
-        MyRequestQueue.add(MyStringRequest);
+        MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
 
     @Override
