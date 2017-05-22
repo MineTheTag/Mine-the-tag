@@ -76,13 +76,15 @@ public class MainActivity extends AppCompatActivity
     public static String gtoken;
     //ArrayList<OverlayItem> osm_items;
     //ArrayList<OverlayItem> osm_mines;
-    ItemizedIconOverlay<OverlayItem> osm_items;
-    MyOwnItemizedOverlay osm_mines_propies;
-    MyOwnItemizedOverlay osm_mines_alienes;
-    MyOwnItemizedOverlay osm_mines_explotades;
-    MyOwnItemizedOverlay osm_tags_propis;
-    MyOwnItemizedOverlay osm_tags_aliens;
-    OverlayItem osm_pos;
+    public ItemizedIconOverlay<OverlayItem> osm_items;
+    public MyOwnItemizedOverlay osm_mines_propies;
+    public MyOwnItemizedOverlay osm_mines_alienes;
+    public MyOwnItemizedOverlay osm_mines_explotades;
+    public MyOwnItemizedOverlay osm_tags_propis;
+    public MyOwnItemizedOverlay osm_tags_aliens;
+    public OverlayItem osm_pos;
+    Handler ha_ref;
+    Runnable runab_ref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -243,7 +245,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         final Handler ha = new Handler();
-        ha.postDelayed(new Runnable() {
+        final Runnable runab = new Runnable() {
             @Override
             public void run() {
                 CheckExplosio();
@@ -272,7 +274,10 @@ public class MainActivity extends AppCompatActivity
                 ActualizarPos();
                 ha.postDelayed(this, 2000);
             }
-        }, 10000);
+        };
+        ha.postDelayed(runab, 10000);
+        ha_ref = ha;
+        runab_ref = runab;
     }
 
     void ActualizarPos()
@@ -289,7 +294,7 @@ public class MainActivity extends AppCompatActivity
         Drawable newMarker = this.getResources().getDrawable(R.drawable.icon);
         osm_pos.setMarker(newMarker);
         osm_items.addItem(osm_pos);
-        Log.d("Overlay num", Integer.toString(map.getOverlays().size()));
+        //Log.d("Overlay num", Integer.toString(map.getOverlays().size()));
         map.invalidate();
     }
 
@@ -317,6 +322,8 @@ public class MainActivity extends AppCompatActivity
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                ArrayList<OverlayItem> overlayItemArray;
+                overlayItemArray = new ArrayList<OverlayItem>();
                 for (int i = 0; i < aliens.length(); i++)
                 {
                     JSONObject a = null;
@@ -337,20 +344,18 @@ public class MainActivity extends AppCompatActivity
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    ArrayList<OverlayItem> overlayItemArray;
-                    overlayItemArray = new ArrayList<OverlayItem>();
+
                     OverlayItem mina = new OverlayItem("New", "TAG", new GeoPoint(posX, posY));
                     Drawable newMarker = getResources().getDrawable(R.drawable.tag_extern);
                     mina.setMarker(newMarker);
                     overlayItemArray.add(mina);
-
-                    MapView map = (MapView) findViewById(R.id.mapview);
-                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                    map.getOverlays().add(overlay);
-                    map.getOverlays().remove(osm_tags_aliens);
-                    osm_tags_aliens = overlay;
-                    map.invalidate();
                 }
+                MapView map = (MapView) findViewById(R.id.mapview);
+                MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                map.getOverlays().add(overlay);
+                map.getOverlays().remove(osm_tags_aliens);
+                osm_tags_aliens = overlay;
+                overlayItemArray = new ArrayList<OverlayItem>();
                 for (int i = 0; i < propis.length(); i++)
                 {
                     JSONObject a = null;
@@ -371,20 +376,17 @@ public class MainActivity extends AppCompatActivity
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    ArrayList<OverlayItem> overlayItemArray;
-                    overlayItemArray = new ArrayList<OverlayItem>();
                     OverlayItem mina = new OverlayItem("New", "TAG", new GeoPoint(posX, posY));
                     Drawable newMarker = getResources().getDrawable(R.drawable.tag_propi);
                     mina.setMarker(newMarker);
                     overlayItemArray.add(mina);
 
-                    MapView map = (MapView) findViewById(R.id.mapview);
-                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                    map.getOverlays().add(overlay);
-                    map.getOverlays().remove(osm_tags_propis);
-                    osm_tags_propis = overlay;
-                    map.invalidate();
                 }
+                MyOwnItemizedOverlay overlay2 = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                map.getOverlays().add(overlay2);
+                map.getOverlays().remove(osm_tags_propis);
+                osm_tags_propis = overlay2;
+                map.invalidate();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -430,6 +432,8 @@ public class MainActivity extends AppCompatActivity
                         JSONArray a = response.getJSONArray("exploded_mines");
                         Toast.makeText(getApplicationContext(), "EXPLOTADES = " + a, Toast.LENGTH_SHORT).show();
                         // Mines que exploten
+                        ArrayList<OverlayItem> overlayItemArray;
+                        overlayItemArray = new ArrayList<OverlayItem>();
                         for (int i = 0; i < a.length(); i++)
                         {
                             JSONArray pos = null;
@@ -446,21 +450,20 @@ public class MainActivity extends AppCompatActivity
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            ArrayList<OverlayItem> overlayItemArray;
-                            overlayItemArray = new ArrayList<OverlayItem>();
                             OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
                             Drawable newMarker = getResources().getDrawable(R.drawable.mine28_exploted);
                             mina.setMarker(newMarker);
                             overlayItemArray.add(mina);
 
-                            MapView map = (MapView) findViewById(R.id.mapview);
-                            MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                            map.getOverlays().add(overlay);
-                            map.getOverlays().remove(osm_mines_explotades);
-                            osm_mines_explotades = overlay;
-                            map.invalidate();
+
 
                         }
+                        MapView map = (MapView) findViewById(R.id.mapview);
+                        MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                        map.getOverlays().add(overlay);
+                        map.getOverlays().remove(osm_mines_explotades);
+                        osm_mines_explotades = overlay;
+                        map.invalidate();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -504,6 +507,8 @@ public class MainActivity extends AppCompatActivity
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
                 //Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
+                ArrayList<OverlayItem> overlayItemArray;
+                overlayItemArray = new ArrayList<OverlayItem>();
                 for (int i = 0; i < response.length(); i++)
                 {
                     JSONArray pos = null;
@@ -520,20 +525,17 @@ public class MainActivity extends AppCompatActivity
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    ArrayList<OverlayItem> overlayItemArray;
-                    overlayItemArray = new ArrayList<OverlayItem>();
                     OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
                     Drawable newMarker = getResources().getDrawable(R.drawable.mine28_admin);
                     mina.setMarker(newMarker);
                     overlayItemArray.add(mina);
-
-                    MapView map = (MapView) findViewById(R.id.mapview);
-                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                    map.getOverlays().add(overlay);
-                    map.getOverlays().remove(osm_mines_alienes);
-                    osm_mines_alienes = overlay;
-                    map.invalidate();
                 }
+                MapView map = (MapView) findViewById(R.id.mapview);
+                MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                map.getOverlays().add(overlay);
+                map.getOverlays().remove(osm_mines_alienes);
+                osm_mines_alienes = overlay;
+                map.invalidate();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -567,6 +569,8 @@ public class MainActivity extends AppCompatActivity
                 //This code is executed if the server responds, whether or not the response contains data.
                 //The String 'response' contains the server's response.
                 //Toast.makeText(getApplicationContext(), "Response = " + response, Toast.LENGTH_LONG).show();
+                ArrayList<OverlayItem> overlayItemArray;
+                overlayItemArray = new ArrayList<OverlayItem>();
                 for (int i = 0; i < response.length(); i++)
                 {
                     JSONArray pos = null;
@@ -583,20 +587,17 @@ public class MainActivity extends AppCompatActivity
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    ArrayList<OverlayItem> overlayItemArray;
-                    overlayItemArray = new ArrayList<OverlayItem>();
                     OverlayItem mina = new OverlayItem("New", "Mina", new GeoPoint(posX, posY));
                     Drawable newMarker = getResources().getDrawable(R.drawable.mine28);
                     mina.setMarker(newMarker);
                     overlayItemArray.add(mina);
-
-                    MapView map = (MapView) findViewById(R.id.mapview);
-                    MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-                    map.getOverlays().add(overlay);
-                    map.getOverlays().remove(osm_mines_propies);
-                    osm_mines_propies = overlay;
-                    map.invalidate();
                 }
+                MapView map = (MapView) findViewById(R.id.mapview);
+                MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+                map.getOverlays().add(overlay);
+                map.getOverlays().remove(osm_mines_propies);
+                osm_mines_propies = overlay;
+                map.invalidate();
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -771,6 +772,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        ha_ref.removeCallbacks(runab_ref);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_drawer, menu);
@@ -800,11 +807,12 @@ public class MainActivity extends AppCompatActivity
             progressDialog.setMax(10);
             progressDialog.setMessage("Logging out...");
             progressDialog.show();
-
             SharedPreferences settings = getPreferences(0);
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString("TOKEN",null);
+            //editor.putString("TOKEN",null);
+            editor.putString("TOKEN","NOTOKEN");
             editor.commit();
+
 
             new android.os.Handler().postDelayed(
                     new Runnable() {
