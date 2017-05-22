@@ -807,10 +807,9 @@ public class MainActivity extends AppCompatActivity
             progressDialog.setMax(10);
             progressDialog.setMessage("Logging out...");
             progressDialog.show();
-            SharedPreferences settings = getPreferences(0);
+            SharedPreferences settings = getSharedPreferences("mttg_config",0);
             SharedPreferences.Editor editor = settings.edit();
-            //editor.putString("TOKEN",null);
-            editor.putString("TOKEN","NOTOKEN");
+            editor.putString("TOKEN",null);
             editor.commit();
 
 

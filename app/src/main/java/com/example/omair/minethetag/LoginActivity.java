@@ -158,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
 
         // Check if user already logged in, and load its Token, continue to app
-        SharedPreferences settings = getPreferences(0);
+        SharedPreferences settings = getSharedPreferences("mttg_config",0);
         final String token = settings.getString("TOKEN","NOTOKEN");
         Log.d("LOGIN PERS", "EL contingut de token a sharedprefs es " + token);
         if (! token.equals("NOTOKEN")){
@@ -289,7 +289,7 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         Log.d("LOGIN = ", e.toString());
                     }
-                    SharedPreferences settings = getPreferences(0);
+                    SharedPreferences settings = getSharedPreferences("mttg_config",0);
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString("TOKEN",TOKEN);
                     editor.commit();
