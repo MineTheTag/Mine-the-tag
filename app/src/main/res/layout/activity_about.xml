@@ -13,7 +13,7 @@
     tools:context="com.example.omair.minethetag.MainActivity">
 
     <TextView
-        android:text="MineTheTag is an Android application created by Omair Iqbal, Daniel Pulido, Carles Juan and David Pinilla as a information technology project. \n"
+        android:text="MineTheTag is an Android application created by Omair Iqbal, Daniel Pulido, Carles Juan and David Pinilla as a information technology project at Barcelona School of Informatics (FIB). \n"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="25dp"

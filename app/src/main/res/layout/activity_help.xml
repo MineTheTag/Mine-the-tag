@@ -12,8 +12,10 @@
     android:background="@color/indigoColor"
     tools:context="com.example.omair.minethetag.MainActivity">
 
+
+
     <TextView
-        android:text="Help for the app..."
+        android:text="Welcome to MineTheTag! \n \nThis is a Geolocation multiplayer game where you have to defend and attack strategic points implemented with NFC tags and distributed in a specific area. After you conquer a strategic point you can put mines around to defend it with the objective of keeping the point as much time as you can."
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="25dp"
