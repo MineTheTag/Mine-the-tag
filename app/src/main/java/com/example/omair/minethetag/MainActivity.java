@@ -86,6 +86,7 @@ public class MainActivity extends AppCompatActivity
     public OverlayItem osm_pos;
     Handler ha_ref;
     Runnable runab_ref;
+    public static String s = "NO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -308,6 +309,30 @@ public class MainActivity extends AppCompatActivity
         osm_pos.setMarker(newMarker);
         osm_items.addItem(osm_pos);
         //Log.d("Overlay num", Integer.toString(map.getOverlays().size()));
+        map.invalidate();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (s.equals("SI"))
+        {
+            pinta_tag();
+            s = "NO";
+        }
+    }
+
+    void pinta_tag()
+    {
+        MapView map = (MapView) findViewById(R.id.mapview);
+        ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
+        OverlayItem mina = new OverlayItem("New", "TAG", new GeoPoint(latitude, longitude));
+        Drawable newMarker = getResources().getDrawable(R.drawable.tag_propi);
+        mina.setMarker(newMarker);
+        overlayItemArray.add(mina);
+
+        MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
+        map.getOverlays().add(overlay);
         map.invalidate();
     }
 

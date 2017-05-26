@@ -28,7 +28,7 @@ public class pop extends Activity {
         timer = (TextView) findViewById(R.id.textView2);
         getWindow().setLayout((int) (width * 0.55), (int) (height * 0.25));
 
-        new CountDownTimer(10000, 1000) {
+        new CountDownTimer(180000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 timer.setText("Seconds remaining: " + millisUntilFinished / 1000);

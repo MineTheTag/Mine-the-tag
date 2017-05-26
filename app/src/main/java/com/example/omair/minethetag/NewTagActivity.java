@@ -36,6 +36,7 @@ import static com.example.omair.minethetag.LoginActivity.gpassword;
 import static com.example.omair.minethetag.LoginActivity.gusername;
 import static com.example.omair.minethetag.LoginActivity.latitude;
 import static com.example.omair.minethetag.LoginActivity.longitude;
+import static com.example.omair.minethetag.MainActivity.s;
 
 public class NewTagActivity extends AppCompatActivity {
 
@@ -97,20 +98,6 @@ public class NewTagActivity extends AppCompatActivity {
         }
     }
 
-    void pinta_tag()
-    {
-        MapView map = (MapView) findViewById(R.id.mapview);
-        ArrayList<OverlayItem> overlayItemArray = new ArrayList<OverlayItem>();
-        OverlayItem mina = new OverlayItem("New", "TAG", new GeoPoint(latitude, longitude));
-        Drawable newMarker = getResources().getDrawable(R.drawable.tag_propi);
-        mina.setMarker(newMarker);
-        overlayItemArray.add(mina);
-
-        MyOwnItemizedOverlay overlay = new MyOwnItemizedOverlay(getApplicationContext(), overlayItemArray);
-        map.getOverlays().add(overlay);
-        map.invalidate();
-    }
-
     private long toDec(byte[] bytes) {
         long result = 0;
         long factor = 1;
@@ -148,17 +135,17 @@ public class NewTagActivity extends AppCompatActivity {
                 {
                     //Toast.makeText(getApplicationContext(), "New TAG created", Toast.LENGTH_LONG).show();
                     mTextView.setText("New Tag created");
-                    pinta_tag();
                 }
                 Handler a = new Handler();
                 a.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        s = "SI";
                         Intent i = new Intent(NewTagActivity.this, MainActivity.class);
                         startActivity(i);
                         finish();
                     }
-                }, 4000);
+                }, 3000);
             }
         }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
             @Override
@@ -198,4 +185,5 @@ public class NewTagActivity extends AppCompatActivity {
         });
         MySingleton.getInstance(this).addToRequestQueue(MyStringRequest);
     }
+
 }
